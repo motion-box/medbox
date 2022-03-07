@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
   button: {
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Extrapolation,
-  FadeIn,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';

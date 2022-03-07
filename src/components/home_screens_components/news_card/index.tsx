@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useAppSelector} from '../../../hooks/redux';
@@ -12,6 +13,7 @@ interface Iprops {
 }
 
 const NewsCard: React.FC<Iprops> = props => {
+  const {t} = useTranslation();
   const {id, title, subTitle, description, imageUrl} = props.data;
   const {screen} = useAppSelector(state => state.globalReducer);
 
@@ -43,7 +45,7 @@ const NewsCard: React.FC<Iprops> = props => {
             </Text>
           </View>
           <Button
-            text="Read more"
+            text={t('read_more')}
             onPress={() => console.log('read more')}
             options={{color: 'white100', textColor: 'black100'}}
           />

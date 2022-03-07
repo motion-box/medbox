@@ -5,9 +5,11 @@ import {
   colorPalet,
   colorPaletTypes,
 } from '../../../resources/style/globalStyle';
+import * as Icons from '../../../resources/icons/icons';
 
 interface Iprops {
   text: string;
+  icon?: Icons.AllIconsType;
   onPress: () => void;
   options?: {
     color?: colorPaletTypes;
@@ -21,7 +23,7 @@ interface Iprops {
 }
 
 const Button: React.FC<Iprops> = props => {
-  const {text, onPress, options} = props;
+  const {text, icon, onPress, options} = props;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -36,14 +38,23 @@ const Button: React.FC<Iprops> = props => {
           borderRadius: options?.borderRadius || 5,
         },
       ]}>
+      {icon &&
+        React.createElement(Icons[icon], {
+          width: '16',
+          height: '16',
+          color: colorPalet[options?.textColor || 'white100'],
+        })}
       <Text
         style={[
           styles.text,
           {
             color: colorPalet[options?.textColor || 'white100'],
             fontSize: options?.textSize || 12,
+            marginLeft: icon ? 10 : 0,
           },
-        ]}>
+        ]}
+        numberOfLines={1}
+        adjustsFontSizeToFit={true}>
         {text}
       </Text>
     </TouchableOpacity>

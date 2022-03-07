@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colorPalet.black100,
     fontFamily: fonts.sf_bold,
+    marginBottom: 10,
   },
   line: {
     width: '100%',
@@ -21,12 +22,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   status_cont: {
+    width: 70,
     height: 20,
     alignSelf: 'flex-end',
-    paddingHorizontal: 10,
+    // paddingHorizontal: 18.5,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10,
   },
   status_text: {
     fontFamily: fonts.sf_medium,
@@ -71,6 +74,26 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: colorPalet.black10,
     marginVertical: 5,
+  },
+  warn_cont: {
+    marginTop: 5,
+    height: 30,
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderRadius: 5,
+    backgroundColor: colorPalet.bgColor,
+  },
+  warn_color: {
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+    width: 5,
+    height: '100%',
+    marginRight: 10,
+  },
+  warn: {
+    fontSize: 12,
+    color: colorPalet.black50,
+    fontFamily: fonts.sf_medium,
   },
 });
 

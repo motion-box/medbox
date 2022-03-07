@@ -1,23 +1,33 @@
 import React from 'react';
 import {View, TouchableOpacity, Dimensions} from 'react-native';
 import {useAppSelector} from '../../../hooks/redux';
-import {
-  MicOffIcon,
-  PhoneIcon,
-  VideoOffIcon,
-} from '../../../resources/icons/icons';
+import * as Icons from '../../../resources/icons/icons';
 import {BlurView} from '@react-native-community/blur';
 import styles from './style';
 import LinearGradient from 'react-native-linear-gradient';
 import {colorPalet} from '../../../resources/style/globalStyle';
 
-interface Iprops {}
+interface Iprops {
+  options: {
+    leftButton: {
+      pressed: boolean;
+      onPress: () => void;
+    };
+    centerButton: {
+      onPress: () => void;
+    };
+    rightButton: {
+      pressed: boolean;
+      onPress: () => void;
+    };
+  };
+}
 
 const {width} = Dimensions.get('window');
 const itemWidth = (width - 62.5) / 3;
 
 const VideoControlTab: React.FC<Iprops> = props => {
-  const {} = props;
+  const {leftButton, centerButton, rightButton} = props.options;
   const {screen, os} = useAppSelector(state => state.globalReducer);
   return (
     <View
@@ -26,12 +36,16 @@ const VideoControlTab: React.FC<Iprops> = props => {
         {width: screen.width - 40, bottom: screen.hasNotch ? 33 : 20},
       ]}>
       <View style={styles.buttons_container}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={leftButton.onPress}>
           <View style={[styles.button, {width: itemWidth}]}>
-            <VideoOffIcon color={colorPalet.black20} />
+            <Icons.VideoOffIcon
+              isGradient={!leftButton.pressed ? true : false}
+              color={leftButton.pressed && colorPalet.black20}
+              gradientColor={!leftButton.pressed && colorPalet.redGradient}
+            />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={centerButton.onPress}>
           <LinearGradient
             colors={colorPalet.redGradient}
             useAngle={true}
@@ -45,15 +59,15 @@ const VideoControlTab: React.FC<Iprops> = props => {
               alignItems: 'center',
               borderRadius: 15,
             }}>
-            <PhoneIcon color={colorPalet.white100} />
+            <Icons.PhoneIcon color={colorPalet.white100} />
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={rightButton.onPress}>
           <View style={[styles.button, {width: itemWidth}]}>
-            <MicOffIcon
-              color={colorPalet.black20}
-              isGradient={true}
-              gradientColor={colorPalet.redGradient}
+            <Icons.MicOffIcon
+              isGradient={!rightButton.pressed ? true : false}
+              color={rightButton.pressed && colorPalet.black20}
+              gradientColor={!rightButton.pressed && colorPalet.redGradient}
             />
           </View>
         </TouchableOpacity>

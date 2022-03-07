@@ -47,6 +47,8 @@ const VideoScreen = ({navigation, route}: ScreenProps) => {
   const endpoint = useRef<any>(null);
   const [localVideoStreamId, setLocalVideoStreamId] = useState('');
   const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('');
+  const [isVideo, setVideo] = useState(false);
+  const [isMicro, setMicro] = useState(false);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -63,10 +65,10 @@ const VideoScreen = ({navigation, route}: ScreenProps) => {
     };
     if (os === 'android') {
       requestPermissions();
-      // makeCall();
+      makeCall();
     } else {
       setPermissionGranted(true);
-      // makeCall();
+      makeCall();
     }
   }, []);
 
@@ -166,8 +168,15 @@ const VideoScreen = ({navigation, route}: ScreenProps) => {
     // });
   };
 
+  const onVideoPress = () => {
+    setVideo(!isVideo);
+  };
   const onHangupPress = () => {
-    call.current.hangup();
+    // call.current.hangup();
+    navigation.pop(2);
+  };
+  const onMicroPress = () => {
+    setMicro(!isMicro);
   };
 
   const showError = (error: string) => {
@@ -205,7 +214,21 @@ const VideoScreen = ({navigation, route}: ScreenProps) => {
         data={{name: 'Alisa Miller', speciality: 'Cardiologist'}}
       />
 
-      <VideoControlTab />
+      <VideoControlTab
+        options={{
+          leftButton: {
+            pressed: isVideo,
+            onPress: onVideoPress,
+          },
+          centerButton: {
+            onPress: onHangupPress,
+          },
+          rightButton: {
+            pressed: isMicro,
+            onPress: onMicroPress,
+          },
+        }}
+      />
     </LinearGradient>
   );
 };

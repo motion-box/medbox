@@ -7,6 +7,7 @@ import {useAppDispatch, useAppSelector} from '../../../hooks/redux';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import styles from './style';
 import Button from '../../../components/global_components/button';
+import {NavigatorTypes} from '../../../navigation';
 
 const APP_NAME = 'medbox';
 const ACC_NAME = 'medbox';
@@ -58,14 +59,7 @@ const ImplantScreen = ({navigation}: ScreenProps) => {
         }),
       );
     }
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'VideoScreen',
-        },
-      ],
-    });
+    navigation.navigate(NavigatorTypes.consultationStack.videoScreen);
   };
 
   const signIn = async () => {

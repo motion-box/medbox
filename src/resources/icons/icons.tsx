@@ -7,7 +7,7 @@ interface Iprops {
   color?: string | null | false;
   isGradient?: boolean | null | false;
   rotate?: '0' | '90' | '180' | '270';
-  gradientColor?: string[];
+  gradientColor?: string[] | null | false;
 }
 
 export const EyeOffIcon = ({width, height, color}: Iprops) => {
@@ -443,18 +443,38 @@ export const MicOffIcon = ({
     </Svg>
   );
 };
-export const VideoOffIcon = ({width, height, color}: Iprops) => {
+export const VideoOffIcon = ({
+  width,
+  height,
+  color,
+  isGradient,
+  gradientColor,
+}: Iprops) => {
   return (
     <Svg
       width={width || '24'}
       height={height || '24'}
       viewBox="0 0 24 24"
       fill="none">
+      <Defs>
+        <LinearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+          <Stop
+            offset="0%"
+            stopColor={gradientColor ? gradientColor[0] : '#05F883'}
+            stopOpacity="1"
+          />
+          <Stop
+            offset="100%"
+            stopColor={gradientColor ? gradientColor[1] : '#00D1FB'}
+            stopOpacity="1"
+          />
+        </LinearGradient>
+      </Defs>
       <Path
         fill-rule="evenodd"
         clip-rule="evenodd"
         d="M2.41421 1L1 2.41422L2.58579 4H2C1.73478 4 1.48043 4.10536 1.29289 4.29289C1.10536 4.48043 1 4.73478 1 5V19C1 19.2652 1.10536 19.5196 1.29289 19.7071C1.48043 19.8946 1.73478 20 2 20H16C16.2652 20 16.5196 19.8946 16.7071 19.7071C16.8946 19.5196 17 19.2652 17 19V18.4142L21.1072 22.5214L22.5214 21.1072L2.41421 1ZM22.731 18.484C22.6985 18.5009 22.6644 18.5142 22.6293 18.5236L8.10573 4H16C16.2652 4 16.5196 4.10536 16.7071 4.29289C16.8946 4.48043 17 4.73478 17 5V9.2L22.213 5.55C22.288 5.49746 22.3759 5.4665 22.4672 5.4605C22.5586 5.45451 22.6498 5.4737 22.731 5.516C22.8122 5.55829 22.8802 5.62206 22.9276 5.70035C22.9751 5.77865 23.0001 5.86846 23 5.96V18.04C23.0001 18.1315 22.9751 18.2214 22.9276 18.2996C22.8802 18.3779 22.8122 18.4417 22.731 18.484Z"
-        fill={color || 'black'}
+        fill={isGradient ? 'url(#grad)' : color || 'black'}
       />
     </Svg>
   );
@@ -695,6 +715,34 @@ export const CircleIcon = ({width, height, color, isGradient}: Iprops) => {
     </Svg>
   );
 };
+export const DeleteBackIcon = ({width, height, color}: Iprops) => {
+  return (
+    <Svg
+      width={width || '24'}
+      height={height || '24'}
+      viewBox="0 0 24 24"
+      fill="none">
+      <Path
+        d="M12 21C12 21 8.00001 21 6.50001 21C6.32191 21 6.21716 20.9638 6.06001 20.88C5.89405 20.7915 5.80367 20.717 5.70001 20.56C5.11349 19.6718 1 13.5 0.370068 12.56C0.242836 12.3701 0.200073 12.2285 0.200073 12C0.200073 11.7715 0.242836 11.6299 0.370068 11.44C1 10.5 5.11349 4.32817 5.70001 3.44C5.80367 3.28303 5.89405 3.20853 6.06001 3.12C6.21716 3.03617 6.32191 3 6.50001 3C7.00001 3 12 3 12 3C12 3 20 2.99999 21 3C21.2995 3 21.4982 3.07821 21.71 3.29C21.9218 3.50178 22 3.70049 22 4C22 5 22 12 22 12C22 12 22 16.8758 22 20C22 20.27 21.9218 20.4982 21.71 20.71C21.4982 20.9218 21.27 21 21 21C20 21 12 21 12 21ZM13 10.586L10.172 7.757L8.75701 9.172L11.586 12L8.75701 14.828L10.172 16.243L13 13.414L15.828 16.243L17.243 14.828L14.414 12L17.243 9.172L15.828 7.757L13 10.586Z"
+        fill={color || 'black'}
+      />
+    </Svg>
+  );
+};
+export const StarFillIcon = ({width, height, color}: Iprops) => {
+  return (
+    <Svg
+      width={width || '24'}
+      height={height || '24'}
+      viewBox="0 0 24 24"
+      fill="none">
+      <Path
+        d="M11.9994 17.8325L5.20083 22L7.0491 14.2222L1 9.02156L8.94017 8.38308L11.9994 1L15.0587 8.38308L23 9.02156L16.9497 14.2222L18.798 22L11.9994 17.8325Z"
+        fill={color || 'black'}
+      />
+    </Svg>
+  );
+};
 
 const AllIconsName = [
   'EyeOffIcon',
@@ -740,6 +788,8 @@ const AllIconsName = [
   'ImageAddIcon',
   'QrScanIcon',
   'CircleIcon', // radio button background
+  'DeleteBackIcon',
+  'StarFillIcon',
 ] as const;
 
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<

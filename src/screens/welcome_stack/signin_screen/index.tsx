@@ -18,7 +18,7 @@ import {userAPI} from '../../../services/UserService';
 import DialogPopup from '../../../components/global_components/dialog_popup';
 import {TFunctionResult} from 'i18next';
 import {storeSecureData} from '../../../hooks/localStorage';
-import {RootNavigatorTypes} from '../../../navigation';
+import {NavigatorTypes} from '../../../navigation';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -113,7 +113,7 @@ const SigninScreen = ({navigation}: ScreenProps) => {
             index: 0,
             routes: [
               {
-                name: RootNavigatorTypes.mainStack,
+                name: NavigatorTypes.stacks.mainStack,
               },
             ],
           });

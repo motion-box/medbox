@@ -5,7 +5,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import {getSecureData} from '../../hooks/localStorage';
 import {CommonActions} from '@react-navigation/native';
-import {RootNavigatorTypes} from '../../navigation';
+import {NavigatorTypes} from '../../navigation';
 import StatusBarFocus from '../../components/global_components/StatusBarCustom';
 import 'moment/locale/ru';
 import 'moment/locale/uz-latn';
@@ -36,7 +36,7 @@ const SplashScreen = ({navigation}: ScreenProps) => {
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{name: RootNavigatorTypes.mainStack}],
+              routes: [{name: NavigatorTypes.stacks.mainStack}],
             }),
           );
         }, 2000);
@@ -45,7 +45,7 @@ const SplashScreen = ({navigation}: ScreenProps) => {
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{name: RootNavigatorTypes.welcomeStack}],
+              routes: [{name: NavigatorTypes.stacks.welcomeStack}],
             }),
           );
         }, 2000);
@@ -61,7 +61,7 @@ const SplashScreen = ({navigation}: ScreenProps) => {
   }, []);
 
   return (
-    <LinearGradient colors={['#344853', '#1A1B27']} style={styles.container}> 
+    <LinearGradient colors={['#344853', '#1A1B27']} style={styles.container}>
       <StatusBarFocus
         backgroundColor="transparent"
         translucent={true}

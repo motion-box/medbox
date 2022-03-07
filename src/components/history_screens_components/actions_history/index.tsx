@@ -5,12 +5,14 @@ import Titler from '../../global_components/titler';
 import {ActionHistoryModel} from '../../../models/ActionsModel';
 import Actions from '../actions';
 import moment from 'moment';
+import {useTranslation} from 'react-i18next';
 
 interface Iprops {
   data: ActionHistoryModel;
 }
 
 const ActionsHistory: React.FC<Iprops> = props => {
+  const {t} = useTranslation();
   const {data} = props;
 
   const mapingHistory = () => {
@@ -32,7 +34,7 @@ const ActionsHistory: React.FC<Iprops> = props => {
 
   return (
     <View style={styles.container}>
-      <Titler text="History" />
+      <Titler text={t('patient_history_history')} />
       {historyItems}
     </View>
   );

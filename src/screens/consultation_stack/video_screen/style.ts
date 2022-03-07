@@ -7,8 +7,6 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: colorPalet.white50,
-    // padding: 10,
-    // margin: 10,
     borderRadius: 10,
   },
   line: {

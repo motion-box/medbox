@@ -3,6 +3,7 @@ import {Provider} from 'react-redux';
 import RootNavigator from './src/navigation';
 import store from './src/store/store';
 import './i18n.config';
+import {MenuProvider} from 'react-native-popup-menu';
 import PreloaderModal from './src/components/global_components/preloader_modal';
 
 // TODO: Add and translate all texts in Welcome screens
@@ -10,12 +11,12 @@ import PreloaderModal from './src/components/global_components/preloader_modal';
 
 const App = () => {
   return (
-    <>
-      <Provider store={store}>
+    <Provider store={store}>
+      <MenuProvider>
         <RootNavigator />
         <PreloaderModal />
-      </Provider>
-    </>
+      </MenuProvider>
+    </Provider>
   );
 };
 

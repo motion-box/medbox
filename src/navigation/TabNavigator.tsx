@@ -1,14 +1,13 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import * as Icons from '../resources/icons/icons';
-import TabbarButton from '../components/global_components/tabbar_button';
-import RegisterScreen from '../screens/register_stack/register_screen';
-import ConsultationScreen from '../screens/consultation_stack/consultation_screen';
-import AccountScreen from '../screens/user_stack/account_screen';
-import {useAppSelector} from '../hooks/redux';
-import HomeNavigator from './HomeNavigator';
 import {StyleSheet} from 'react-native';
+import TabbarButton from '../components/global_components/tabbar_button';
+import ConsultationScreen from '../screens/consultation_stack/consultation_screen';
+import {useAppSelector} from '../hooks/redux';
 import HomeScreen from '../screens/home_stack/home_screen';
+import HistoryScreen from '../screens/history_stack/history_screen';
+import AccountScreen from '../screens/user_stack/account_screen';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,8 +28,8 @@ const tabs: ItabsArr = [
   },
   {
     id: '1',
-    name: 'RegisterScreen',
-    component: RegisterScreen,
+    name: 'HistoryScreen',
+    component: HistoryScreen,
     icon: 'ClipboardIcon',
   },
   {
@@ -55,6 +54,7 @@ const TabNavigator = () => {
     <Tab.Navigator
       initialRouteName={tabs[0].name}
       screenOptions={({route}) => ({
+        // tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
         headerShown: false,
         tabBarStyle: [

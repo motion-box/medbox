@@ -1,13 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  ScrollView,
-  Platform,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import {View} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import Actions from '../../../components/register_screens_components/actions';
+import Actions from '../../../components/history_screens_components/actions';
 import Header from '../../../components/global_components/header';
 import NewsCarousel from '../../../components/home_screens_components/news_carousel';
 import Search from '../../../components/global_components/search';
@@ -22,7 +16,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import {RootNavigatorTypes} from '../../../navigation';
+import {NavigatorTypes} from '../../../navigation';
 import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
 
 const newsData: Array<NewsModel> = [
@@ -52,7 +46,7 @@ const newsData: Array<NewsModel> = [
 const actionsData: Array<ActionModel> = [
   {
     id: '0',
-    title: '55 455',
+    title: 12102,
     status: 'active',
     created: {
       date: '2022-12-12',
@@ -63,7 +57,7 @@ const actionsData: Array<ActionModel> = [
   },
   {
     id: '1',
-    title: '55 455',
+    title: 12105,
     status: 'canceled',
     created: {
       date: '2022-12-12',
@@ -80,7 +74,7 @@ const actionsData: Array<ActionModel> = [
   },
   {
     id: '2',
-    title: '55 455',
+    title: 19021,
     status: 'closed',
     created: {
       date: '2022-12-12',
@@ -97,7 +91,7 @@ const actionsData: Array<ActionModel> = [
   },
   {
     id: '3',
-    title: '55 455',
+    title: 20150,
     status: 'active',
     created: {
       date: '2022-12-12',
@@ -134,7 +128,7 @@ const HomeScreen = ({navigation}: ScreenProps) => {
     }, []),
   );
   const goSearch = () => {
-    navigation.navigate(RootNavigatorTypes.homeStack);
+    navigation.navigate(NavigatorTypes.homeStack.searchScreen);
   };
 
   return (
@@ -158,7 +152,7 @@ const HomeScreen = ({navigation}: ScreenProps) => {
           scrollY={scrollY}
           options={{
             title: 'Smariddin Salohiddinov',
-            subtitle: 'Welcome to MEDBOX',
+            subtitle: t('welcome_to_medbox'),
             smallAlign: 'center',
             left: {
               backgroundColor: 'white100',
@@ -177,7 +171,7 @@ const HomeScreen = ({navigation}: ScreenProps) => {
           onScroll={scrollHandler}
           scrollEventThrottle={16}
           contentContainerStyle={{
-            paddingTop: 40,
+            paddingTop: 50,
             paddingBottom: screen.hasNotch
               ? 154
               : 120 + (screen.headerSize || 20),
@@ -186,11 +180,11 @@ const HomeScreen = ({navigation}: ScreenProps) => {
           showsVerticalScrollIndicator={false}>
           <Search
             shearchFunc={goSearch}
-            options={{placeholder: t('FindDoc')}}
+            options={{placeholder: t('search_doctor')}}
             filterPress={goSearch}
           />
           <NewsCarousel data={newsData} />
-          <Actions titleText="Last Actions" data={actionsData} />
+          <Actions titleText={t('actions_last')} data={actionsData} />
         </Animated.ScrollView>
       </View>
     </View>

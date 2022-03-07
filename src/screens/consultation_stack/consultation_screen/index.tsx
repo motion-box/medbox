@@ -7,7 +7,7 @@ import FindButton from '../../../components/consultation_screens_components/find
 import {useAppSelector} from '../../../hooks/redux';
 import {colorPalet, fonts} from '../../../resources/style/globalStyle';
 import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
-import {useFocusEffect} from '@react-navigation/native';
+import {NavigatorTypes} from '../../../navigation';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -32,7 +32,7 @@ export default function ConsultationScreen({navigation}: ScreenProps) {
   const onPress = () => {
     setButtonActive(true);
     setTimeout(() => {
-      navigation.navigate('ConsultationStack');
+      navigation.navigate(NavigatorTypes.consultationStack.inmplantScreen);
     }, 200);
   };
   return (

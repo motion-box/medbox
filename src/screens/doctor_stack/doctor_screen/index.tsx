@@ -75,7 +75,7 @@ const DoctorScreen = ({navigation, route}: ScreenProps) => {
           onScroll={scrollHandler}
           scrollEventThrottle={16}
           contentContainerStyle={{
-            paddingTop: 40,
+            paddingTop: 50,
             paddingBottom: screen.hasNotch
               ? 154
               : 120 + (screen.headerSize || 20),

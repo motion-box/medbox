@@ -12,11 +12,13 @@ import {
   colorPalet,
   colorPaletTypes,
 } from '../../../resources/style/globalStyle';
+import SearchAnimated from '../search_animated';
 import {Button, HeaderContent} from './header_types';
 import styles from './style';
 
 interface Iprops {
   scrollY: Animated.SharedValue<number>;
+  externalCompnent?: React.ComponentElement<any, any>;
   options: {
     title: string;
     subtitle?: string;
@@ -39,20 +41,21 @@ type BtnProps = {
 };
 
 const Header = (props: Iprops) => {
-  const {scrollY, options} = props;
+  const {scrollY, externalCompnent, options} = props;
   const {screen} = useAppSelector(state => state.globalReducer);
 
-  const contStyle = useAnimatedStyle(() => {
+  const headStyle = useAnimatedStyle(() => {
     const height = interpolate(
       scrollY.value,
-      [0, 200],
-      [70, 40],
+      [0, 100],
+      [90, 50],
       Extrapolation.CLAMP,
     );
     return {
       height: height,
     };
   });
+
   const gradStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       scrollY.value,
@@ -66,17 +69,14 @@ const Header = (props: Iprops) => {
   });
 
   return (
-    <>
-      <Animated.View
-        style={[
-          contStyle,
-          styles.header_cont,
-          {
-            zIndex: 100,
-            top: screen.hasNotch ? 0 : 0,
-            backgroundColor: colorPalet.bgColor,
-          },
-        ]}>
+    <View
+      style={[
+        styles.container,
+        {
+          width: screen.width,
+        },
+      ]}>
+      <Animated.View style={[headStyle, styles.header_cont]}>
         {options.left && (
           <Button
             scrollY={scrollY}
@@ -114,14 +114,15 @@ const Header = (props: Iprops) => {
             }}
           />
         )}
-        <Animated.View style={[styles.grad_cont, gradStyle]}>
-          <LinearGradient
-            colors={['rgba(0,0,0, 0.08)', 'rgba(0,0,0, 0)']}
-            style={styles.grad}
-          />
-        </Animated.View>
       </Animated.View>
-    </>
+      {externalCompnent && externalCompnent}
+      <Animated.View style={[styles.grad_cont, gradStyle]} pointerEvents="none">
+        <LinearGradient
+          colors={['rgba(0,0,0, 0.08)', 'rgba(0,0,0, 0)']}
+          style={styles.grad}
+        />
+      </Animated.View>
+    </View>
   );
 };
 

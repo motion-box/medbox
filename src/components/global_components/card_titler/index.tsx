@@ -1,18 +1,25 @@
-import React, {useState} from 'react';
-import {View, Text, Image, ImageSourcePropType} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, Text, Image, TouchableOpacity, Pressable} from 'react-native';
 import styles from './style';
 import RatingStars from '../rating_stars';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Icons from '../../../resources/icons/icons';
 import {colorPalet} from '../../../resources/style/globalStyle';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Animated, {FadeInDown, FadeOutDown} from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  FadeOutDown,
+  measure,
+} from 'react-native-reanimated';
+import {useAppDispatch, useAppSelector} from '../../../hooks/redux';
+import {paramsSlice} from '../../../store/reducers/ParamsSlice';
+import PopupMenu from '../popup_menu';
 
 interface Iprops {
   imageUrl: string;
   name: string;
   stars?: 1 | 2 | 3 | 4 | 5;
   subtitle?: string;
+  clipper?: 'white' | 'bg';
   right: {
     centered?: CenteredViewType;
     boldFirst?: BoldFirstViewType;
@@ -42,7 +49,7 @@ interface Iprops {
 // },
 
 const CardTitler: React.FC<Iprops> = props => {
-  const {imageUrl, name, stars, subtitle, right} = props;
+  const {imageUrl, name, stars, subtitle, clipper = 'white', right} = props;
   return (
     <View style={styles.container}>
       <View style={styles.left_side}>
@@ -62,7 +69,11 @@ const CardTitler: React.FC<Iprops> = props => {
           {stars && <RatingStars rate={stars} textAcitve={true} />}
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
           <LinearGradient
-            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+            colors={
+              clipper === 'white'
+                ? ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']
+                : ['rgba(246,250,250,0)', 'rgba(246,250,250,1)']
+            }
             start={{x: 0, y: 10}}
             end={{x: 0.8, y: 10}}
             style={styles.grad}
@@ -111,32 +122,17 @@ interface CenteredViewType {
   options?: {
     icon: Icons.AllIconsType;
     text: string;
+    disabled: boolean;
     onPress: () => void;
   }[];
 }
 const CenteredView = (props: CenteredViewType) => {
   const {text, options} = props;
-  const [isModal, setModal] = useState(false);
+
   return (
     <View style={styles.centered}>
       <Text style={styles.centered_text}>{text}</Text>
-      {options && (
-        <TouchableOpacity
-          style={styles.options_cont}
-          onPress={() => setModal(true)}>
-          <Icons.MoreIcon width="16" height="16" color={colorPalet.black50} />
-        </TouchableOpacity>
-      )}
-      {isModal && (
-        <Animated.View
-          entering={FadeInDown}
-          exiting={FadeOutDown}
-          style={styles.modal}>
-          <TouchableOpacity onPress={() => setModal(false)}>
-            {React.createElement(Icons[options![0].icon || 'ArrowIcon'])}
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+      {options && <PopupMenu options={options} />}
     </View>
   );
 };

@@ -82,11 +82,10 @@ const styles = StyleSheet.create({
     color: colorPalet.black50,
   },
   modal: {
+    zIndex: 100,
     position: 'absolute',
     top: -10,
     right: 0,
-    width: 150,
-    height: 120,
     backgroundColor: colorPalet.white100,
     borderRadius: 5,
     shadowColor: '#000',
@@ -97,6 +96,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
+  },
+  modal_item_cont: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 0.2,
+    borderBottomColor: colorPalet.black10,
+  },
+  modal_item_text: {
+    marginLeft: 10,
+    fontSize: 14,
+    fontFamily: fonts.sf_medium,
+    color: colorPalet.black100,
   },
 });
 

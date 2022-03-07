@@ -5,20 +5,22 @@ import {useAppSelector} from '../../../hooks/redux';
 import Titler from '../../global_components/titler';
 import NewsCard from '../news_card';
 import {NewsModel} from '../../../models/NewsModel';
+import {useTranslation} from 'react-i18next';
 
 interface Iprops {
   data: NewsModel[];
 }
 
 const NewsCarousel: React.FC<Iprops> = props => {
+  const {t} = useTranslation();
   const {data} = props;
   const {screen} = useAppSelector(state => state.globalReducer);
 
   return (
     <View style={styles.container}>
       <Titler
-        text="Last News"
-        subtext="View All"
+        text={t('news_last')}
+        subtext={t('view_all')}
         onPress={() => Alert.alert('View all')}
       />
       <FlatList

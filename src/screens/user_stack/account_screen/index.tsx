@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, View, ScrollView, Text, Platform} from 'react-native';
+import React, {useState} from 'react';
+import {View} from 'react-native';
 import Animated, {
   Layout,
   useAnimatedScrollHandler,
@@ -13,11 +13,8 @@ import UserInfo from '../../../components/user_screens_components/user_info';
 import {NotificationModel} from '../../../models/NotificationModel';
 import {UserModel} from '../../../models/UserModal';
 import {colorPalet} from '../../../resources/style/globalStyle';
-import {globalSlice} from '../../../store/reducers/GlobalSlice';
-import {useAppDispatch, useAppSelector} from '../../../hooks/redux';
-import {CommonActions, useFocusEffect} from '@react-navigation/native';
-import {clearAllSecureData} from '../../../hooks/localStorage';
-import {RootNavigatorTypes} from '../../../navigation';
+import {useAppSelector} from '../../../hooks/redux';
+import {NavigatorTypes} from '../../../navigation';
 import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -137,7 +134,7 @@ export default function AccountScreen({navigation}: ScreenProps) {
               icon: 'SettingsIcon',
               isGradient: true,
               onPress: () =>
-                navigation.navigate(RootNavigatorTypes.settingsScreen),
+                navigation.navigate(NavigatorTypes.stacks.settingsScreen),
             },
           }}
         />
@@ -146,7 +143,7 @@ export default function AccountScreen({navigation}: ScreenProps) {
           scrollEventThrottle={16}
           layout={Layout.delay(100)}
           contentContainerStyle={{
-            paddingTop: 40,
+            paddingTop: 50,
             paddingBottom: screen.hasNotch
               ? 154
               : 120 + (screen.headerSize || 20),

@@ -6,7 +6,6 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Search from '../../../components/global_components/search';
 import Titler from '../../../components/global_components/titler';
 import Animated, {
-  FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -14,10 +13,9 @@ import Animated, {
 import LinearGradient from 'react-native-linear-gradient';
 import DoctorCard from '../../../components/home_screens_components/doctor_card';
 import EmptyEvent from '../../../components/global_components/empty_event';
-import {RootNavigatorTypes} from '../../../navigation';
-import BottomSheetModal from '../../../components/global_components/bottom_sheet_modal';
-import {colorPalet} from '../../../resources/style/globalStyle';
 import SearchSettingsModal from '../../../components/global_components/bottom_sheet_modal/search_setting_modal';
+import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
+import {NavigatorTypes} from '../../../navigation';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -146,8 +144,7 @@ const SearchScreen = ({navigation}: ScreenProps) => {
   });
 
   const navigateToDoctor = (id: string) => {
-    // navigation.goBack();
-    navigation.navigate(RootNavigatorTypes.doctorStack, {id: id});
+    navigation.navigate(NavigatorTypes.doctorStack.doctorScreen, {id: id});
   };
 
   const mapResult = doctors.map(item => {
@@ -168,6 +165,11 @@ const SearchScreen = ({navigation}: ScreenProps) => {
           paddingTop: screen.hasNotch ? 64 : (screen.headerSize || 20) + 20,
         },
       ]}>
+      <StatusBarFocus
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
       <Search
         shearchFunc={() => console.log('find doctor')}
         options={{placeholder: 'Find doctor', autoFocus: true}}
@@ -200,6 +202,7 @@ const SearchScreen = ({navigation}: ScreenProps) => {
         </Animated.View>
       </View>
       {doctors.length ? (
+        // <></>
         <ScrollView
           style={{flex: 1}}
           contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 20}}

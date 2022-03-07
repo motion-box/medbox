@@ -25,7 +25,7 @@ import {userAPI} from '../../../services/UserService';
 import moment from 'moment';
 import {storeSecureData} from '../../../hooks/localStorage';
 import {useAppSelector} from '../../../hooks/redux';
-import {RootNavigatorTypes} from '../../../navigation';
+import {NavigatorTypes} from '../../../navigation';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -82,7 +82,7 @@ const UserFormScreen = ({navigation, route}: ScreenProps) => {
             index: 0,
             routes: [
               {
-                name: RootNavigatorTypes.mainStack,
+                name: NavigatorTypes.stacks.mainStack,
               },
             ],
           });

@@ -1,6 +1,6 @@
 export interface ActionModel {
   id: string;
-  title: string;
+  title: number;
   status: 'canceled' | 'active' | 'closed';
   created: {
     date: string;
@@ -13,6 +13,9 @@ export interface ActionModel {
     doctor: string;
     speciality: string;
     imageUrl: string;
+  };
+  warn?: {
+    text: string;
   };
 }
 

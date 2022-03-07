@@ -18,7 +18,7 @@ import StatusBarFocus from '../../../components/global_components/StatusBarCusto
 import Header from '../../../components/global_components/header';
 import {clearAllSecureData} from '../../../hooks/localStorage';
 import {CommonActions} from '@react-navigation/native';
-import {RootNavigatorTypes} from '../../../navigation';
+import {NavigatorTypes} from '../../../navigation';
 import {ImageAddIcon} from '../../../resources/icons/icons';
 import {useTranslation} from 'react-i18next';
 import Input from '../../../components/global_components/input';
@@ -71,7 +71,7 @@ const SettingsScreen = ({navigation}: ScreenProps) => {
             navigation.dispatch(
               CommonActions.reset({
                 index: 0,
-                routes: [{name: RootNavigatorTypes.welcomeStack}],
+                routes: [{name: NavigatorTypes.stacks.welcomeStack}],
               }),
             );
           }
@@ -176,7 +176,7 @@ const SettingsScreen = ({navigation}: ScreenProps) => {
             onScroll={scrollHandler}
             scrollEventThrottle={16}
             contentContainerStyle={{
-              paddingTop: 40,
+              paddingTop: 50,
               paddingHorizontal: 20,
               paddingBottom: screen.hasNotch ? 114 : 90,
             }}

@@ -15,7 +15,7 @@ const Actions: React.FC<Iprops> = props => {
   const {titleText, data} = props;
   const mapItems = data.map(item => <ActionCard key={item.id} data={item} />);
   return (
-    <View style={{marginTop: titleText ? 20 : 0}}>
+    <View style={{marginTop: titleText ? 0 : 0}}>
       {titleText && <Titler text={titleText} />}
       {data.length ? (
         <View style={styles.cards_cont}>{mapItems}</View>
