@@ -12,10 +12,10 @@ const BloodTest: React.FC<Iprops> = props => {
   const {data} = props;
 
   const mapItems = data.map((item, index) => (
-    <>
-      <Item key={item.id} {...item} />
+    <React.Fragment key={item.id}>
+      <Item {...item} />
       {index !== data.length - 1 && <View style={styles.line} />}
-    </>
+    </React.Fragment>
   ));
 
   return <View style={styles.container}>{mapItems}</View>;
@@ -58,7 +58,11 @@ const Item = (props: BloodTestItemProps) => {
           <Text style={styles.notation_text}>{notation}</Text>
         </View>
         {level && (
-          <LinearGradient colors={colors[level]} style={styles.level_cont}>
+          <LinearGradient
+            colors={colors[level]}
+            style={styles.level_cont}
+            useAngle={true}
+            angle={120}>
             <Text style={styles.level_text}>{t(level)}</Text>
           </LinearGradient>
         )}
@@ -72,6 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: colorPalet.bgColor,
     padding: 10,
+    marginBottom: 10,
   },
   item_cont: {
     height: 30,

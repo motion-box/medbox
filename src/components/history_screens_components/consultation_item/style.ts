@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorPalet.white100,
     padding: 10,
     marginHorizontal: 20,
+    // borderWidth: 1,
   },
   type_cont: {
     paddingHorizontal: 10,

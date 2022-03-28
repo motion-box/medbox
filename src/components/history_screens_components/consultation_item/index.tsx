@@ -5,6 +5,11 @@ import BookNotActiveItem from './item_types/book_not_active_item';
 import ActiveItem from './item_types/active_item';
 import ChooseDoctorItem from './item_types/choose_doctor_item';
 import ClosedItem from './item_types/closed_item';
+import {ConsultationModel} from '../../../models/HistoryItemsModel';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {NavigatorTypes} from '../../../navigation';
+import {useAppSelector} from '../../../hooks/redux';
 
 type cardTypes =
   | 'bookDoctor'
@@ -14,130 +19,132 @@ type cardTypes =
   | 'bookNoDoctor'
   | 'closed';
 interface Iprops {
-  data: {
-    type: 'online' | 'offline';
-    card: cardTypes;
-  };
+  lang: 'ru' | 'en' | 'uz';
+  data: ConsultationModel;
+  setModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setModalData: React.Dispatch<
+    React.SetStateAction<{
+      id: number;
+      image: string | undefined;
+      full_name: string;
+      speciality: string;
+      isEstimate: boolean;
+      consultationId: number;
+    } | null>
+  >;
 }
 
 //TODO: Rorder cards by types
 
-const ConsultationItem: React.FC<Iprops> = props => {
-  const {type, card} = props.data;
+const ConsultationItem: React.FC<Iprops> = ({
+  data,
+  lang,
+  setModal,
+  setModalData,
+}) => {
+  const {
+    id,
+    doctor,
+    conclusion,
+    speciality,
+    scheduled_time,
+    is_online,
+    is_payment_required,
+    price_of_speciality,
+  } = data;
+  const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const {registerId} = useAppSelector(state => state.paramsReducer);
+
+  const onDoctorInfoPress = () => {
+    doctor?.id &&
+      navigation.navigate(NavigatorTypes.doctorStack.doctorScreen, {
+        id: doctor.id,
+        read_only: true,
+      });
+  };
+  const onOtherPress = (isEstimate: boolean) => {
+    setModalData({
+      id: doctor!.id,
+      image: doctor?.photo,
+      full_name: `${doctor?.first_name} ${doctor?.last_name}`,
+      speciality: speciality[`name_${lang}`],
+      isEstimate: isEstimate,
+      consultationId: id,
+    });
+    setModal(true);
+  };
 
   return (
     <View style={styles.container}>
-      {card === 'bookDoctor' && (
+      {doctor && !scheduled_time && !price_of_speciality && (
         <BookNotActiveItem
-          type={type}
+          type={is_online ? 'online' : 'offline'}
           doctor={{
-            id: 0,
-            name: 'Abduhakimova Munavvar',
-            speciality: 'Cardiologist',
-            imageUrl: '',
+            id: doctor!.id,
+            name: `${doctor?.first_name} ${doctor?.last_name}`,
+            speciality: speciality[`name_${lang}`],
+            imageUrl: doctor!.photo,
           }}
         />
       )}
-      {card === 'notPaid' && (
+      {doctor && scheduled_time && price_of_speciality && !conclusion ? (
         <ActiveItem
-          type={type}
+          onDoctorInfoPress={onDoctorInfoPress}
+          onOtherPress={onOtherPress}
+          type={is_online ? 'online' : 'offline'}
           doctor={{
-            id: 0,
-            name: 'Abduhakimova Munavvar',
-            speciality: 'Cardiologist',
-            imageUrl: '',
+            id: doctor!.id,
+            name: `${doctor?.first_name} ${doctor?.last_name}`,
+            speciality: speciality[`name_${lang}`],
+            imageUrl: doctor!.photo,
           }}
           workPlace={{
-            imageUrl: '',
-            name: 'Shox Internation Hospital',
-            price: 219200,
+            imageUrl: price_of_speciality.clinic.photo,
+            name: price_of_speciality.clinic.name,
+            price: price_of_speciality.price,
+            latitude: price_of_speciality.clinic.latitude,
+            longitude: price_of_speciality.clinic.longitude,
           }}
-          paid={false}
-          date="2022-03-05T20:00"
-          startDate="2022-03-06T21:00"
+          paid={!is_payment_required}
+          date={scheduled_time}
+          startDate={scheduled_time}
+          paymentData={{
+            registerId: registerId as number,
+            specialityId: speciality.id,
+            conclusionId: id,
+            price: price_of_speciality.price,
+          }}
         />
-      )}
-      {card === 'notTime' && (
-        <ActiveItem
-          type={type}
-          doctor={{
-            id: 0,
-            name: 'Abduhakimova Munavvar',
-            speciality: 'Cardiologist',
-            imageUrl: '',
-          }}
-          workPlace={{
-            imageUrl: '',
-            name: 'Shox Internation Hospital',
-            price: 219200,
-          }}
-          paid={true}
-          date="2022-03-05T20:00"
-          startDate="2022-03-06T20:10"
-        />
-      )}
-      {card === 'time' && (
-        <ActiveItem
-          type={type}
-          doctor={{
-            id: 0,
-            name: 'Abduhakimova Munavvar',
-            speciality: 'Cardiologist',
-            imageUrl: '',
-          }}
-          workPlace={{
-            imageUrl: '',
-            name: 'Shox Internation Hospital',
-            price: 199500,
-          }}
-          paid={true}
-          date="2022-03-04T20:00"
-          startDate="2022-03-04T21:00"
-        />
-      )}
-      {card === 'bookNoDoctor' && (
+      ) : null}
+      {!doctor && (
         <ChooseDoctorItem
-          type={type}
-          speciality="Cardiologist"
-          description="Technical and Procedural Aspects of a Staged Repair of a Giant Post-Dissection"
-          doctors={[
-            {
-              id: 0,
-              imageUrl: '',
-              name: 'Abduhakimova Munavvar',
-              speciality: 'Cardiologist',
-              rate: 4,
-              price: 129200,
-            },
-            {
-              id: 1,
-              imageUrl: '',
-              name: 'Abduhakimova Munavvar',
-              speciality: 'Cardiologist',
-              rate: 5,
-              price: 215800,
-            },
-          ]}
+          type={is_online ? 'online' : 'offline'}
+          specialityId={speciality.id}
+          speciality={speciality[`name_${lang}`]}
+          description={speciality[`description_${lang}`]}
+          consultationId={id}
         />
       )}
-      {card === 'closed' && (
+      {conclusion && doctor && price_of_speciality ? (
         <ClosedItem
-          type={type}
+          onDoctorInfoPress={onDoctorInfoPress}
+          onOtherPress={onOtherPress}
+          type={is_online ? 'online' : 'offline'}
           doctor={{
-            id: 0,
-            name: 'Abduhakimova Munavvar',
-            speciality: 'Cardiologist',
-            imageUrl: '',
+            id: doctor.id,
+            name: `${doctor.first_name} ${doctor.last_name}`,
+            speciality: speciality[`name_${lang}`],
+            imageUrl: doctor.photo,
           }}
           workPlace={{
-            imageUrl: '',
-            name: 'Shox Internation Hospital',
-            price: 199500,
+            imageUrl: price_of_speciality.clinic.photo,
+            name: price_of_speciality.clinic.name,
+            price: price_of_speciality.price,
           }}
-          date="2022-01-02T13:00"
-          conclusion="Technical and Procedural Aspects of a Staged Repair of a Giant Post-Dissection Aneurysm by Using Endosizing- Based Endovascular Stenting Following Aortic Surgical Repair with Simultaneous Debranching Technique"
+          date={scheduled_time}
+          conclusion={conclusion}
         />
-      )}
+      ) : null}
     </View>
   );
 };

@@ -1,5 +1,12 @@
-import React, {useRef, useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity} from 'react-native';
+import React, {useCallback, useRef, useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+} from 'react-native';
 import styles from './style';
 import {
   CloseIcon,
@@ -12,6 +19,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import {debounce} from '../../../hooks/debounce';
 
 interface Iprops {
   scrollY: Animated.SharedValue<number>;
@@ -33,6 +41,21 @@ const SearchAnimated: React.FC<Iprops> = props => {
   const {scrollY, text, setText, placeholder, isFocuse, setFocuse, options} =
     props;
   const ref = useRef<TextInput>(null);
+
+  /**
+   * Gets input text value and call API to search
+   * @param text
+   */
+  const onTyping = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    debounceTyping(e.nativeEvent.text);
+    // onTextTyping(e.nativeEvent.text);
+  };
+  const debounceTyping = useCallback(
+    debounce(text => {
+      setText(text);
+    }, 500),
+    [],
+  );
 
   // height animation
   const hStyle = useAnimatedStyle(() => {
@@ -100,7 +123,7 @@ const SearchAnimated: React.FC<Iprops> = props => {
           ref={ref}
           style={[iStyle, styles.input]}
           placeholder={placeholder}
-          onChange={e => setText(e.nativeEvent.text)}
+          onChange={onTyping}
           onFocus={() => setFocuse(true)}
         />
         <Animated.View

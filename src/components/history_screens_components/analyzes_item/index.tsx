@@ -147,7 +147,7 @@ const AnalyzesItem: React.FC<AnayzesProps> = props => {
       )}
       {conclusion && (
         <View>
-          <Text style={[styles.title, {marginVertical: 10}]}>
+          <Text style={[styles.title, {marginBottom: 10}]}>
             {t('conclusion')}
           </Text>
           <Text style={styles.description}>{conclusion}</Text>

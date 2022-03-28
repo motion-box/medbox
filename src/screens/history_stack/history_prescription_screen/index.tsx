@@ -15,6 +15,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
+import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
+import {colorPalet} from '../../../resources/style/globalStyle';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -117,6 +119,11 @@ const HistoryPrescriptionScreen = ({}: ScreenProps) => {
 
   return (
     <>
+      <StatusBarFocus
+        translucent={true}
+        backgroundColor={colorPalet.bgColor}
+        barStyle="dark-content"
+      />
       <Animated.View
         style={[shadow, styles.shadow, {width: screen.width}]}
         pointerEvents="none">

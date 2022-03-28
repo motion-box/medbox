@@ -15,6 +15,7 @@ export const colorPalet = {
   white80: 'rgba(255, 255, 255, 0.8)',
   white50: 'rgba(255, 255, 255, 0.5)',
   white20: 'rgba(255, 255, 255, 0.2)',
+  inactive: '#D2D2D5',
   inputError: '#ff91bf',
   brandGradient: ['#05F883', '#00D1FB'],
   redGradient: ['#FF66A6', '#FF4444'],
@@ -34,7 +35,8 @@ export type colorPaletTypes =
   | 'white80'
   | 'white50'
   | 'white20'
-  | 'inputError';
+  | 'inputError'
+  | 'inactive';
 
 export const fonts = {
   sf_bold: 'SFProDisplay-Bold',

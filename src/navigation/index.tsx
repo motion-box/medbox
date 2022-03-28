@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {useAppDispatch} from '../hooks/redux';
+import {useAppDispatch, useAppSelector} from '../hooks/redux';
 import {globalSlice} from '../store/reducers/GlobalSlice';
 import {hasNotch} from 'react-native-device-info';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -30,6 +30,12 @@ import HistoryNavigator from './HistoryNavigator';
 //
 import {colorPalet, fonts} from '../resources/style/globalStyle';
 import {ArrowIcon, QRIcon} from '../resources/icons/icons';
+import MapScreen from '../screens/map_screen';
+import ShowMoreScreen from '../screens/history_stack/show_more_screen';
+import PaymentScreen from '../screens/history_stack/payment_screen';
+import {paramsSlice} from '../store/reducers/ParamsSlice';
+import NewsOverallScreen from '../screens/home_stack/news_overall_screen';
+import NewsScreen from '../screens/home_stack/news_screen';
 
 const {width, height} = Dimensions.get('window');
 
@@ -42,9 +48,14 @@ export const NavigatorTypes = {
     mainStack: 'MainStack',
     settingsScreen: 'SettingsScreen',
     historyStack: 'HistoryStack',
+    showMoreScreen: 'ShowMoreScreen',
+    mapScreen: 'MapScreen',
+    paymentScreen: 'PaymentScreen',
   },
   homeStack: {
     searchScreen: 'SearchScreen',
+    newsOverallScreen: 'NewsOverallScreen',
+    newsScreen: 'NewsScreen',
   },
   consultationStack: {
     inmplantScreen: 'ImplantScreen',
@@ -53,13 +64,12 @@ export const NavigatorTypes = {
   doctorStack: {
     doctorScreen: 'DoctorScreen',
   },
-  // historyStack: {
-  //   detailScreen: 'DetailScreen',
-  // },
 };
 
 const RootNavigator = () => {
   const dispatch = useAppDispatch();
+  const {registerId} = useAppSelector(state => state.paramsReducer);
+  const {setQr} = paramsSlice.actions;
   const {setScreenParams, setOS} = globalSlice.actions;
 
   useEffect(() => {
@@ -73,6 +83,10 @@ const RootNavigator = () => {
     );
     dispatch(setOS(Platform.OS as 'android' | 'ios'));
   }, []);
+
+  const onQrPress = () => {
+    dispatch(setQr(true));
+  };
 
   return (
     <NavigationContainer>
@@ -97,6 +111,11 @@ const RootNavigator = () => {
           name={NavigatorTypes.stacks.settingsScreen}
           component={SettingsScreen}
         />
+        <Stack.Screen
+          name={NavigatorTypes.stacks.mapScreen}
+          component={MapScreen}
+          options={{gestureEnabled: false}}
+        />
 
         {/* Home stack */}
         <Stack.Group screenOptions={{headerShown: false}}>
@@ -104,6 +123,15 @@ const RootNavigator = () => {
             name={NavigatorTypes.homeStack.searchScreen}
             component={SearchScreen}
             options={{presentation: 'transparentModal'}}
+          />
+          <Stack.Screen
+            name={NavigatorTypes.homeStack.newsOverallScreen}
+            component={NewsOverallScreen}
+            options={{presentation: 'transparentModal'}}
+          />
+          <Stack.Screen
+            name={NavigatorTypes.homeStack.newsScreen}
+            component={NewsScreen}
           />
         </Stack.Group>
 
@@ -159,7 +187,7 @@ const RootNavigator = () => {
               ),
               headerRight: props => (
                 <TouchableOpacity
-                  // onPress={props.onPress}
+                  onPress={onQrPress}
                   style={{
                     height: 50,
                     width: 50,
@@ -181,12 +209,22 @@ const RootNavigator = () => {
                   }}
                   numberOfLines={1}
                   ellipsizeMode="clip">
-                  № 55 129
+                  {`№ ${registerId
+                    ?.toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`}
                 </Text>
               ),
             }}
           />
         </Stack.Group>
+        <Stack.Screen
+          name={NavigatorTypes.stacks.showMoreScreen}
+          component={ShowMoreScreen}
+        />
+        <Stack.Screen
+          name={NavigatorTypes.stacks.paymentScreen}
+          component={PaymentScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

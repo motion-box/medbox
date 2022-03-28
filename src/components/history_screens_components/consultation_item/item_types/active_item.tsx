@@ -1,12 +1,20 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import moment from 'moment';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {View, Text} from 'react-native';
-import {colorPalet} from '../../../../resources/style/globalStyle';
+import {useAndroidLocationPermission} from '../../../../hooks/useAndroidLocationPermission';
+import {NavigatorTypes} from '../../../../navigation';
+import {
+  colorPalet,
+  colorPaletTypes,
+} from '../../../../resources/style/globalStyle';
 import Button from '../../../global_components/button';
 import CardTitler from '../../../global_components/card_titler';
 import HospitalInfo from '../../hospital_info';
 import OnlineOffline from '../../online_offline';
+import Geolocation from 'react-native-geolocation-service';
 
 interface Iprops {
   type: 'online' | 'offline';
@@ -17,22 +25,112 @@ interface Iprops {
     imageUrl: string;
   };
   workPlace: {
-    imageUrl: string;
+    imageUrl: string | undefined;
     name: string;
     price: number;
+    latitude: string;
+    longitude: string;
   };
   paid: boolean;
   date: string;
   startDate: string;
+  onDoctorInfoPress: () => void;
+  onOtherPress: (isEstimate: boolean) => void;
+  paymentData: {
+    registerId: number;
+    specialityId: number;
+    conclusionId: number;
+    price: number;
+  };
 }
 
 const ActiveItem: React.FC<Iprops> = props => {
   const {t} = useTranslation();
-  const {type, doctor, workPlace, paid, date, startDate} = props;
+  const {
+    type,
+    doctor,
+    workPlace,
+    paid,
+    date,
+    startDate,
+    onDoctorInfoPress,
+    onOtherPress,
+    paymentData,
+  } = props;
   const diff = moment(startDate, 'YYYY-MM-DDTHH:mm').fromNow();
   const diffTime = moment().diff(moment(startDate, 'YYYY-MM-DDTHH:mm'), 'h');
-  const actionButtonColor = diffTime < 0 ? 'black20' : 'black100';
-  const actionButtonText = diffTime < 0 ? diff : t('start_online');
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
+  const validateButtonPress = () => {
+    if (!paid) return;
+    if (type == 'offline') {
+      diffTime < 1 && showOnMapPress();
+    } else {
+      diffTime < 1 &&
+        diffTime >= 0 &&
+        navigation.navigate(
+          NavigatorTypes.consultationStack.inmplantScreen,
+          doctor,
+        );
+    }
+  };
+
+  const textColorFunction = (funcType: string) => {
+    let returnedVal;
+    if (funcType === 'text') {
+      if (type === 'online') {
+        returnedVal =
+          diffTime > 1
+            ? t('time_expired')
+            : diffTime < 0
+            ? diff
+            : t('start_online');
+      } else {
+        returnedVal = diffTime >= 1 ? t('time_expired') : t('show_on_map');
+      }
+    } else {
+      if (type === 'online') {
+        returnedVal =
+          diffTime > 1 ? 'black20' : diffTime < 0 ? 'black20' : 'black100';
+      } else {
+        returnedVal = diffTime >= 1 ? 'black20' : 'black100';
+      }
+    }
+    return returnedVal;
+  };
+
+  const onPayPress = () => {
+    navigation.navigate(NavigatorTypes.stacks.paymentScreen, {
+      consultationData: {...paymentData},
+    });
+  };
+
+  const showOnMapPress = async () => {
+    const permission = await useAndroidLocationPermission();
+    if (permission === 'granted') {
+      Geolocation.getCurrentPosition(
+        position => {
+          navigation.navigate(NavigatorTypes.stacks.mapScreen, {
+            taskType: 'show_on_map',
+            userPos: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            placePos: {
+              latitude: parseFloat(workPlace.latitude),
+              longitude: parseFloat(workPlace.longitude),
+            },
+          });
+        },
+        error => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+        },
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      );
+    }
+  };
+
   return (
     <View>
       <CardTitler
@@ -47,25 +145,19 @@ const ActiveItem: React.FC<Iprops> = props => {
                 icon: 'NurseIcon',
                 text: t('doctor_info'),
                 disabled: false,
-                onPress: () => console.log('doctor info'),
-              },
-              {
-                icon: 'CloseCircleIcon',
-                text: t('cancel'),
-                disabled: false,
-                onPress: () => console.log('cancel'),
+                onPress: onDoctorInfoPress,
               },
               {
                 icon: 'StarFillIcon',
                 text: t('estimate'),
                 disabled: true,
-                onPress: () => console.log('estimate'),
+                onPress: () => onOtherPress(true),
               },
               {
                 icon: 'AlarmWarningIcon',
                 text: t('complain'),
                 disabled: true,
-                onPress: () => console.log('complain'),
+                onPress: () => onOtherPress(false),
               },
             ],
           },
@@ -78,7 +170,7 @@ const ActiveItem: React.FC<Iprops> = props => {
           padding: 10,
           marginVertical: 10,
         }}>
-        <View style={{position: 'absolute', top: -10, right: 20, zIndex: 1}}>
+        <View style={{position: 'absolute', top: -10, right: 10, zIndex: 1}}>
           <OnlineOffline type={type} />
         </View>
         <HospitalInfo {...workPlace} color="bgColor" />
@@ -90,7 +182,7 @@ const ActiveItem: React.FC<Iprops> = props => {
               <Button
                 text={t('pay')}
                 icon="WalletIcon"
-                onPress={() => console.log('book')}
+                onPress={onPayPress}
                 options={{
                   buttonWidth: '100%',
                   buttonHeight: 40,
@@ -103,11 +195,13 @@ const ActiveItem: React.FC<Iprops> = props => {
         )}
         <View style={{flex: 1}}>
           <Button
-            text={actionButtonText}
-            icon="VideoIcon"
-            onPress={() => console.log('book')}
+            text={textColorFunction('text')}
+            icon={type === 'online' ? 'VideoIcon' : 'RoadMapIcon'}
+            onPress={validateButtonPress}
             options={{
-              color: actionButtonColor,
+              color: paid
+                ? (textColorFunction('color') as colorPaletTypes)
+                : 'black20',
               buttonWidth: '100%',
               buttonHeight: 40,
               textSize: 14,

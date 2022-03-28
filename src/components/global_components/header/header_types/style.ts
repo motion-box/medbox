@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   grad: {
     width: 20,
-    height: '90%',
+    height: '100%',
     position: 'absolute',
     right: -1,
   },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
 import styles from './style';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -16,6 +16,9 @@ import {useAppSelector} from '../../../hooks/redux';
 import AnalyzesItem, {
   AnayzesProps,
 } from '../../../components/history_screens_components/analyzes_item';
+import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
+import {colorPalet} from '../../../resources/style/globalStyle';
+import {registerAPI} from '../../../services/RegisterService';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -177,10 +180,30 @@ const data: AnayzesProps[] = [
   },
 ];
 
-const HistoryAnalyzeScreen = ({}: ScreenProps) => {
+const HistoryAnalyzeScreen = ({navigation}: ScreenProps) => {
   const {t} = useTranslation();
   const {screen} = useAppSelector(state => state.globalReducer);
   const scrollY = useSharedValue(0);
+  const {registerId} = useAppSelector(state => state.paramsReducer);
+  const {accessData} = useAppSelector(state => state.userReducer);
+  const [getAnalyzes, {isLoading}] = registerAPI.useGetAnalyzesMutation();
+  // const [data, setData] = useState();
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getAnalyzes({
+        token: accessData!.token,
+        data: {register: registerId as number},
+      })
+        .unwrap()
+        .then(res => {
+          console.log(res);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    });
+  }, []);
 
   // opacity animation
   const scrollHandler = useAnimatedScrollHandler({
@@ -201,6 +224,11 @@ const HistoryAnalyzeScreen = ({}: ScreenProps) => {
   });
   return (
     <>
+      <StatusBarFocus
+        translucent={true}
+        backgroundColor={colorPalet.bgColor}
+        barStyle="dark-content"
+      />
       <Animated.View
         style={[shadow, styles.shadow, {width: screen.width}]}
         pointerEvents="none">

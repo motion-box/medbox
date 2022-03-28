@@ -1,64 +1,52 @@
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
+import Animated, {FadeInDown} from 'react-native-reanimated';
 import {useAppSelector} from '../../../hooks/redux';
-import {ActionModel} from '../../../models/ActionsModel';
+import {RegisterModel} from '../../../models/HistoryItemsModel';
+import {userAPI} from '../../../services/UserService';
 import EmptyEvent from '../../global_components/empty_event';
 import Titler from '../../global_components/titler';
 import ActionCard from '../actions_card';
 import styles from './style';
-
 interface Iprops {
   text: string;
 }
 
-const searchData: Array<ActionModel> = [
-  {
-    id: '0',
-    title: 12120,
-    status: 'active',
-    created: {
-      date: '2022-12-12',
-      doctor: 'Abduhakimova Munavvar',
-      speciality: 'Cardiologist',
-      imageUrl: 'image',
-    },
-    warn: {
-      text: 'payment_required',
-    },
-  },
-  {
-    id: '1',
-    title: 15000,
-    status: 'active',
-    created: {
-      date: '2022-12-12',
-      doctor: 'Abduhakimova Munavvar',
-      speciality: 'Cardiologist',
-      imageUrl: 'image',
-    },
-    warn: {
-      text: 'payment_required',
-    },
-  },
-];
-
 const ActionsSearch: React.FC<Iprops> = props => {
   const {t} = useTranslation();
   const {text} = props;
-  const {screen} = useAppSelector(state => state.globalReducer);
-  const [data, setData] = useState<Array<ActionModel>>([]);
+  const {accessData} = useAppSelector(state => state.userReducer);
+  const {screen, lang} = useAppSelector(state => state.globalReducer);
+  const {specialities} = useAppSelector(state => state.classifiersReucer);
+  const [getRegister] = userAPI.useGetUserRegistersMutation();
+  const [data, setData] = useState<Array<RegisterModel>>([]);
+
   useEffect(() => {
-    if (text.length > 3) {
-      console.log(text);
-      setData(searchData);
+    if (text.length) {
+      getRegister({
+        token: accessData!.token,
+        userId: accessData!.id,
+        search: text,
+      })
+        .unwrap()
+        .then(res => {
+          setData(res);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     } else {
       setData([]);
     }
   }, [text]);
 
   const mapData = data.map(item => {
-    return <ActionCard key={item.id} data={item} />;
+    return (
+      <Animated.View key={item.id} entering={FadeInDown}>
+        <ActionCard data={item} specialities={specialities} lang={lang} />
+      </Animated.View>
+    );
   });
   return (
     <View>

@@ -1,9 +1,11 @@
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import HistoryAnalyzeScreen from '../screens/history_stack/history_analyzes_screen';
-import HistoryConsultScreen from '../screens/history_stack/history_conult_screen';
+import HistoryConsultScreen from '../screens/history_stack/history_consult_screen';
 import HistoryPrescriptionScreen from '../screens/history_stack/history_prescription_screen';
 import HistoryTab from '../components/history_screens_components/history_tab';
+import {useAppSelector} from '../hooks/redux';
+import {userSlice} from '../store/reducers/UserSlice';
 
 const Tab = createMaterialTopTabNavigator();
 

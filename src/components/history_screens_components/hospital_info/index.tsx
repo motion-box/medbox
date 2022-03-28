@@ -8,7 +8,7 @@ import {
 } from '../../../resources/style/globalStyle';
 
 interface Iprops {
-  imageUrl: string;
+  imageUrl: string | undefined;
   name: string;
   price: number;
   color: colorPaletTypes;
@@ -18,10 +18,13 @@ const HospitalInfo: React.FC<Iprops> = props => {
   const {imageUrl, name, price, color} = props;
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.image}
-        source={require('../../../resources/images/shoxmed_little.png')}
-      />
+      {imageUrl ? (
+        <Image
+          style={styles.image}
+          source={{uri: imageUrl}}
+          resizeMode="contain"
+        />
+      ) : null}
       <View style={styles.name_cont}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="clip">
           {name}

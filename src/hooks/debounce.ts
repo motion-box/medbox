@@ -1,7 +1,11 @@
-export function debounce(func: () => void, debounceTime: number) {
-  var timer: number;
-  return function (event: any) {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(func, debounceTime, event);
+export const debounce = <F extends (...args: any) => any>(
+  func: F,
+  waitFor: number,
+) => {
+  let timeout: NodeJS.Timeout;
+
+  return (...args: any) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), waitFor);
   };
-}
+};

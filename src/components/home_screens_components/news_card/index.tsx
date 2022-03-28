@@ -10,12 +10,12 @@ import styles from './style';
 
 interface Iprops {
   data: NewsModel;
+  onPress: (data: NewsModel) => void;
 }
 
-const NewsCard: React.FC<Iprops> = props => {
+const NewsCard: React.FC<Iprops> = ({data, onPress}) => {
   const {t} = useTranslation();
-  const {id, title, subTitle, description, imageUrl} = props.data;
-  const {screen} = useAppSelector(state => state.globalReducer);
+  const {screen, lang} = useAppSelector(state => state.globalReducer);
 
   return (
     <TouchableOpacity
@@ -23,49 +23,27 @@ const NewsCard: React.FC<Iprops> = props => {
         styles.container,
         {
           width: screen.width - 40,
+          height: (screen.width - 40) / 1.86,
         },
       ]}
       activeOpacity={1}
-      onPress={() => Alert.alert(`News id is: ${id}`)}>
-      <LinearGradient
-        colors={colorPalet.brandGradient}
-        start={{x: -2, y: -2}}
-        useAngle={true}
-        angle={160}
-        end={{x: 2, y: 2}}
-        style={styles.grad_cont}>
-        <View style={styles.content_cont}>
-          <View>
-            <Text style={styles.subtitle}>{subTitle}</Text>
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
-            <Text style={styles.description} numberOfLines={3}>
-              {description}
-            </Text>
+      onPress={() => onPress(data)}>
+      <View style={styles.content_cont}>
+        <View style={{width: '70%'}}>
+          <Text style={styles.title} numberOfLines={2}>
+            {data[`title_${lang}`]}
+          </Text>
+          <Text style={styles.subtitle} numberOfLines={3}>
+            {data[`subtitle_${lang}`]}
+          </Text>
+        </View>
+        <View style={{alignItems: 'flex-start'}}>
+          <View style={styles.button}>
+            <Text style={styles.button_text}>{t('read_more')}</Text>
           </View>
-          <Button
-            text={t('read_more')}
-            onPress={() => console.log('read more')}
-            options={{color: 'white100', textColor: 'black100'}}
-          />
         </View>
-        <View style={{position: 'absolute', right: 0, bottom: 0}}>
-          <Image source={require('../../../resources/images/img2.png')} />
-          <View
-            style={{
-              width: 250,
-              height: 250,
-              borderRadius: 1000,
-              position: 'absolute',
-              right: -60,
-              bottom: -100,
-              backgroundColor: colorPalet.white20,
-              zIndex: -1,
-            }}
-          />
-        </View>
-      </LinearGradient>
+      </View>
+      <Image source={{uri: data.album}} style={styles.image} />
     </TouchableOpacity>
   );
 };

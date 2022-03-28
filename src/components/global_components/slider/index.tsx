@@ -14,9 +14,9 @@ import Animated, {
 
 interface Iprops {
   data: {
-    id: string;
+    id: number;
     text: string;
-    onPress: (id: string) => void;
+    onPress: (id: number) => void;
   }[];
   options?: {
     buttonHeight?: 30 | 40;
@@ -40,7 +40,7 @@ const Slider: React.FC<Iprops> = props => {
     };
   });
 
-  const onPress = (id: string, index: number) => {
+  const onPress = (id: number, index: number) => {
     setActiveIndex(id);
     let leftpar = index == 0 ? 5 : index == 1 ? 8 : 11.5;
     left.value = withTiming(index * itemWidth + leftpar);

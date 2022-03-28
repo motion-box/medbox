@@ -6,42 +6,51 @@ import {colorPalet} from '../../../resources/style/globalStyle';
 import styles from './style';
 import moment from 'moment';
 import {useAppSelector} from '../../../hooks/redux';
+import {HourIntervalsModel} from '../../../models/ClassifiersModel';
+import {ScheduleModel} from '../../../models/DoctorModel';
+import {DayType, TimeType} from '../doctor_book_modal';
 
-interface Iprops {}
+interface Iprops {
+  schedule?: ScheduleModel;
+  activeDate: DayType;
+  setActiveDate: React.Dispatch<React.SetStateAction<DayType>>;
+  weeks_name: string[];
+  activeTime: TimeType | null;
+  setActiveTime: (time: TimeType | null) => void;
+}
 
 type DateType = {
   id: number;
   date: string;
-  formated: {day: string; dayOfWeek: string};
+  formated: {day: string; dayOfWeek: string; dayKey: string};
 };
-type TimeType = {
-  id: number;
-  time: {
-    start: string;
-    end: string;
-  };
-};
-
 const {width} = Dimensions.get('window');
 const timeItemWidth = (width - 60) / 3;
 
 const DoctorTimePicker: React.FC<Iprops> = props => {
-  const {} = props;
+  const {
+    schedule,
+    activeDate,
+    setActiveDate,
+    weeks_name,
+    activeTime,
+    setActiveTime,
+  } = props;
   const {t} = useTranslation();
   const {screen} = useAppSelector(state => state.globalReducer);
-  const [activeDate, setActiveDate] = useState(1);
+  const {hourIntervals} = useAppSelector(state => state.classifiersReucer);
+
   const [dates, setDates] = useState<[] | DateType[]>([]);
-  const [activeTime, setActiveTime] = useState<null | number>(null);
-  const [times, setTimes] = useState<[] | TimeType[]>([]);
 
   useEffect(() => {
-    let daysArr = [
+    let daysArr: DateType[] = [
       {
         id: 0,
-        date: moment().format('YYYY-MM-DD'),
+        date: moment(new Date()).format('YYYY-MM-DD'),
         formated: {
           day: moment().format('DD MMMM'),
           dayOfWeek: moment().format('dddd'),
+          dayKey: weeks_name[moment().day()],
         },
       },
     ];
@@ -49,13 +58,18 @@ const DoctorTimePicker: React.FC<Iprops> = props => {
       daysArr.push({id: i + 1, ...addDay(daysArr[i].date)});
     }
     setDates(daysArr);
-
-    let timesArr = [{id: 0, time: {start: '00:00', end: '01:00'}}];
-    for (let i = 0; i < 23; i++) {
-      timesArr.push({id: i + 1, time: addHour(timesArr[i].time.end)});
-    }
-    setTimes(timesArr);
   }, []);
+
+  useEffect(() => {
+    if (schedule) {
+      setActiveDate({
+        id: 1,
+        dayKey: weeks_name[moment().day()],
+        date: moment().format('YYYY-MM-DD'),
+      });
+      setActiveTime(null);
+    }
+  }, [schedule]);
 
   const addDay = (day: string) => {
     let newDay = moment(day, 'YYYY-MM-DD').add(1, 'd');
@@ -64,19 +78,18 @@ const DoctorTimePicker: React.FC<Iprops> = props => {
       formated: {
         day: newDay.format('DD MMMM'),
         dayOfWeek: newDay.format('dddd'),
+        dayKey: weeks_name[newDay.day()],
       },
     };
   };
-  const addHour = (time: string) => {
-    let newTime = moment(time, 'HH:mm').add(1, 'h').format('HH:mm');
-    return {start: time, end: newTime};
-  };
 
-  const onDatePress = (id: number) => {
-    setActiveDate(id);
+  const onDatePress = (data: DayType) => {
+    console.log(data);
+    setActiveDate({...data});
+    setActiveTime(null);
   };
-  const onTimePress = (id: number) => {
-    setActiveTime(id);
+  const onTimePress = ({id, time}: {id: number; time: string}) => {
+    setActiveTime({id, time});
   };
   return (
     <View style={[styles.container]}>
@@ -91,7 +104,7 @@ const DoctorTimePicker: React.FC<Iprops> = props => {
         renderItem={({item}) => {
           return (
             <DateCard
-              isActive={activeDate === item.id}
+              isActive={activeDate.id === item.id}
               data={item}
               onPress={onDatePress}
             />
@@ -102,10 +115,15 @@ const DoctorTimePicker: React.FC<Iprops> = props => {
       <Text style={styles.title}>{t('time')}</Text>
       <View style={{height: 5}} />
       <View style={styles.times_cont}>
-        {times.map(item => (
+        {hourIntervals.map(item => (
           <TimeCard
             key={item.id}
-            isActive={activeTime === item.id}
+            isActive={activeTime?.id === item.id}
+            available={
+              schedule &&
+              // @ts-ignore
+              schedule[activeDate.dayKey].some(value => value.id === item.id)
+            }
             data={item}
             onPress={onTimePress}
           />
@@ -117,13 +135,17 @@ const DoctorTimePicker: React.FC<Iprops> = props => {
 
 interface DateCardProps {
   isActive: boolean;
-  onPress: (id: number) => void;
+  onPress: ({id, dayKey}: DayType) => void;
   data: DateType;
 }
 const DateCard = (props: DateCardProps) => {
   const {isActive, data, onPress} = props;
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={() => onPress(data.id)}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() =>
+        onPress({id: data.id, dayKey: data.formated.dayKey, date: data.date})
+      }>
       <LinearGradient
         style={styles.date_card_cont}
         colors={
@@ -155,22 +177,32 @@ const DateCard = (props: DateCardProps) => {
 
 interface TimeCardProps {
   isActive: boolean;
-  onPress: (id: number) => void;
-  data: TimeType;
+  available: boolean;
+  onPress: ({id, time}: {id: number; time: string}) => void;
+  data: HourIntervalsModel;
 }
 const TimeCard = (props: TimeCardProps) => {
-  const {isActive, onPress, data} = props;
+  const {isActive, onPress, data, available} = props;
 
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      onPress={() => onPress(data.id)}
+      onPress={() =>
+        available &&
+        !isActive &&
+        onPress({
+          id: data.id,
+          time: moment(data.hour_from, 'H').format('HH:mm'),
+        })
+      }
       style={{marginVertical: 5}}>
       <LinearGradient
         style={[styles.times_card_cont, {width: timeItemWidth}]}
         colors={
-          isActive
-            ? colorPalet.brandGradient
+          available
+            ? isActive
+              ? colorPalet.brandGradient
+              : [colorPalet.bgColor, colorPalet.bgColor]
             : [colorPalet.bgColor, colorPalet.bgColor]
         }
         useAngle={true}
@@ -181,8 +213,17 @@ const TimeCard = (props: TimeCardProps) => {
           numberOfLines={1}
           style={[
             styles.times_card_text,
-            {color: isActive ? colorPalet.white100 : colorPalet.black100},
-          ]}>{`${data.time.start} - ${data.time.end}`}</Text>
+            {
+              color: available
+                ? isActive
+                  ? colorPalet.white100
+                  : colorPalet.black100
+                : colorPalet.black20,
+            },
+          ]}>{`${moment(data.hour_from, 'H').format('HH:mm')} - ${moment(
+          data.hour_to,
+          'H',
+        ).format('HH:mm')}`}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );

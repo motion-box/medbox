@@ -97,6 +97,22 @@
   "read_more": "Read more",
   "search_doctor": "Find a doctor",
   "result": "Result",
+  "no_results": "No results",
+  "not_selected": "Not selected",
+  "is_online": "State",
+
+  "pathology": "Pathologies",
+  "allergy": "Allergies",
+  "no_pathology": "No pathologies",
+  "no_allergy": "No allergies",
+  "family_soon_title": "Family",
+  "family_soon_subtitle": "You can monitor the health of your family",
+  "family_soon_soon": "Soon",
+  "pay_screen_title": "Choose card",
+  "total_amount": "Total amount",
+  "engineering_works": "Engineering works",
+  "add_card_warn": "Adding cards is temporarily unavailable",
+  "time_expired": "Time expired",
 
   "patient_history_title": "Your history",
   "payment_required": "Payment required",
@@ -109,6 +125,7 @@
   "prescriptions": "prescriptions",
   "how_would_you_rate": "How would you rate the doctor",
   "your_complaint": "Your complaint about the doctor",
+  "text_input_placeholder": "Please write your text here...",
   "doctor_info": "Doctor info",
   "estimate": "Estimate",
   "complain": "Complain",
@@ -116,6 +133,26 @@
   "days_left": "deys left",
   "services": "Services",
 
+  "blood_type": "Blood type",
+  "age": "Age",
+  "years_old": "years",
+  "gender": "Gender",
+  "address": "The address",
+  "family": "Family",
+  "your_clinic": "Your clinic",
+  "doctor": "Doctor",
+  "not_specified": "Not specified",
+
+  "choose_place": "Pick a point",
+  "show_on_navigator": "Show in navigator",
+  "address_changed": "Changed",
+  "no_reviews": "No reviews",
+
+  "qr_title": "Show the doctor",
+  "qr_subtitle": "QR-code",
+
+  "no_workplaces": "Doesn't work anywhere",
+  "loading": "Loading",
   "unsaved_changes": "You have unsaved changes.\nDo you really want to go back?",
   "active": "Active",
   "canceled": "Canceled",
@@ -133,5 +170,6 @@
   "go_back_anyway": "Go back anyway",
   "global_warning_title": "Warning",
   "global_error_title": "Something went wrong...",
-  "global_error_description": "It seems that something happened to the server, we are already working on it. Try again a little later"
+  "global_error_description": "It seems that something happened to the server, we are already working on it. Try again a little later",
+  "global_data_change_description": "Are you sure you want to change the data?"
 }

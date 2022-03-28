@@ -6,12 +6,26 @@ enum status {
   error = 'error',
 }
 
-type langs = 'en' | 'ru' | 'uz';
-export const storeSecureData = async (data: any, language: langs) => {
+type DataTypes = {
+  user: {
+    id: number;
+    phone_number: string;
+  };
+  token: string;
+  refresh_token: string;
+  expire_time: string;
+};
+type LanguagesType = 'en' | 'ru' | 'uz';
+export const storeSecureData = async (
+  data: DataTypes,
+  language: LanguagesType,
+) => {
   try {
     await EncryptedStorage.setItem(
       'session_data',
       JSON.stringify({
+        id: data.user.id,
+        phone_number: data.user.phone_number,
         token: data.token,
         refresh_token: data.refresh_token,
         expire_time: data.expire_time,

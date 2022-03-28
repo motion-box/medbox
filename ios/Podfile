@@ -22,6 +22,10 @@ target 'medbox' do
   pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
+  pod 'react-native-voximplant', path: '../node_modules/react-native-voximplant'
+  pod 'VoxImplantSDK', path: '../voximplantBitCode/VoxImplant_bitcode/'
+  pod 'VoxImplantWebRTC', path: '../voximplantBitCode/VoxImplantWebRTC_bitcode/'
+
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and

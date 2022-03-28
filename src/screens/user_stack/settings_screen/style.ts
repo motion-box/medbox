@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 20,
+    backgroundColor: colorPalet.black10,
   },
   add_image_cont: {
     position: 'absolute',
@@ -39,6 +40,20 @@ const styles = StyleSheet.create({
   },
   name_cont: {
     flexDirection: 'row',
+  },
+  language_btn: {
+    flexDirection: 'row',
+    height: 50,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colorPalet.white100,
+  },
+  language_text: {
+    fontSize: 14,
+    fontFamily: fonts.sf_medium,
+    color: colorPalet.black100,
   },
 });
 

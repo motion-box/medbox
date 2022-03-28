@@ -11,7 +11,6 @@ const PreloaderModal = () => {
       animationType="fade"
       transparent={true}
       visible={isLoading}
-      //   onRequestClose={() => {}}
       style={{
         width: '100%',
         height: '100%',

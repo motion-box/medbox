@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
-import {View, ScrollView} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, ScrollView, Text, ActivityIndicator} from 'react-native';
 import styles from './style';
 import {useAppSelector} from '../../../hooks/redux';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Search from '../../../components/global_components/search';
 import Titler from '../../../components/global_components/titler';
 import Animated, {
+  FadeInDown,
+  FadeOutDown,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -16,118 +18,65 @@ import EmptyEvent from '../../../components/global_components/empty_event';
 import SearchSettingsModal from '../../../components/global_components/bottom_sheet_modal/search_setting_modal';
 import StatusBarFocus from '../../../components/global_components/StatusBarCustom';
 import {NavigatorTypes} from '../../../navigation';
+import {doctorAPI, SearchParams} from '../../../services/DoctorService';
+import {DoctorModel} from '../../../models/DoctorModel';
+import {SpecialityModel} from '../../../models/ClassifiersModel';
+import {useTranslation} from 'react-i18next';
+import LittlePreloader from '../../../components/global_components/little_preloader';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
   route: {
-    params?: {};
+    params: {
+      isModal: boolean;
+      isFocus: boolean;
+      filterSpeciality: {id: number; index: number; name: string} | undefined;
+    };
   };
 }
 
-const doctors = [
-  {
-    id: '0',
-    name: 'Abduhakimova Munavvar',
-    speciality: 'Cardiologist',
-    price: 300000,
-    rate: 4.5,
-    imageUrl: '',
-  },
-  {
-    id: '1',
-    name: 'Azamat Alimov',
-    speciality: 'Cardiologist',
-    price: 120000,
-    rate: 3.9,
-    imageUrl: '',
-  },
-  {
-    id: '2',
-    name: 'Ulugbek Alimov',
-    speciality: 'Cardiologist',
-    price: 299990,
-    rate: 5,
-    imageUrl: '',
-  },
-  {
-    id: '3',
-    name: 'Avaz Shoabdullaev',
-    speciality: 'Cardiologist',
-    price: 299990,
-    rate: 3.2,
-    imageUrl: '',
-  },
-  {
-    id: '4',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '5',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '6',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '7',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '8',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '9',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '10',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-  {
-    id: '11',
-    name: 'Timur Amiraliev',
-    speciality: 'Cardiologist',
-    price: 399999,
-    rate: 4.2,
-    imageUrl: '',
-  },
-];
-
-const SearchScreen = ({navigation}: ScreenProps) => {
-  const {screen} = useAppSelector(state => state.globalReducer);
+const SearchScreen = ({navigation, route}: ScreenProps) => {
+  const {t} = useTranslation();
+  const {filterSpeciality, isFocus, isModal} = route.params;
+  const {screen, lang} = useAppSelector(state => state.globalReducer);
+  const {accessData} = useAppSelector(state => state.userReducer);
   const opacity = useSharedValue(0);
+  const [setting, setSetting] = useState(isModal);
+  const selectedOnlineOption = useRef(0);
+  const selectedRatingOption = useRef(0);
+  const [filterParams, setFilterParams] = useState<SearchParams>({
+    speciality: filterSpeciality?.id,
+    rating__gte: 0,
+    rating__lte: undefined,
+    is_online: undefined,
+  });
+  const [searchingText, setSearchingText] = useState('');
+  const [searchResult, setSearchResult] = useState<
+    Array<DoctorModel<SpecialityModel>>
+  >([]);
+  const [searchDoctor, {isLoading}] = doctorAPI.useSearchDoctorMutation();
 
-  const [setting, setSetting] = useState(false);
+  useEffect(() => {
+    startSearching();
+  }, [searchingText, filterParams]);
+
+  const startSearching = () => {
+    searchDoctor({
+      token: accessData!.token,
+      params: {...filterParams, search: searchingText},
+    })
+      .unwrap()
+      .then(res => {
+        if (res) {
+          setSearchResult(res);
+        }
+      })
+      .catch(e => console.log(e));
+  };
+
+  const changeFilterParams = (data: SearchParams) => {
+    setFilterParams({...data});
+  };
 
   const handleScroll = (event: any) => {
     if (event.nativeEvent.contentOffset.y > 5) {
@@ -143,17 +92,19 @@ const SearchScreen = ({navigation}: ScreenProps) => {
     };
   });
 
-  const navigateToDoctor = (id: string) => {
+  const navigateToDoctor = (id: number) => {
     navigation.navigate(NavigatorTypes.doctorStack.doctorScreen, {id: id});
   };
 
-  const mapResult = doctors.map(item => {
+  const mapResult = searchResult.map(item => {
     return (
-      <DoctorCard
-        key={item.id}
-        data={item}
-        nagigateToDoctor={navigateToDoctor}
-      />
+      <Animated.View key={item.id} entering={FadeInDown} exiting={FadeOutDown}>
+        <DoctorCard
+          lang={lang}
+          data={item}
+          nagigateToDoctor={navigateToDoctor}
+        />
+      </Animated.View>
     );
   });
 
@@ -171,13 +122,20 @@ const SearchScreen = ({navigation}: ScreenProps) => {
         barStyle="dark-content"
       />
       <Search
-        shearchFunc={() => console.log('find doctor')}
-        options={{placeholder: 'Find doctor', autoFocus: true}}
-        filterPress={() => setSetting(true)}
+        filterParams={filterParams}
+        setFilterParams={changeFilterParams}
+        searchingText={searchingText}
+        setSearchingText={setSearchingText}
+        options={{
+          placeholder: 'Find doctor',
+          autoFocus: isFocus,
+          selected: filterSpeciality,
+        }}
+        settingsPressed={() => setSetting(true)}
       />
       <View style={{height: 20}} />
       <View style={{zIndex: 1, marginBottom: 5}}>
-        <Titler text="Result" subtext={`${doctors.length}`} />
+        <Titler text={t('result')} subtext={`${searchResult.length}`} />
         <Animated.View
           pointerEvents="none"
           style={[
@@ -201,28 +159,35 @@ const SearchScreen = ({navigation}: ScreenProps) => {
           />
         </Animated.View>
       </View>
-      {doctors.length ? (
-        // <></>
-        <ScrollView
-          style={{flex: 1}}
-          contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 20}}
-          onScroll={handleScroll}
-          scrollEventThrottle={50}
-          showsVerticalScrollIndicator={false}>
-          {mapResult}
-        </ScrollView>
-      ) : (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <EmptyEvent text="No results" icon="SearchIcon" />
-        </View>
-      )}
+      <>
+        {isLoading ? (
+          <Animated.View style={styles.preloader}>
+            <LittlePreloader />
+          </Animated.View>
+        ) : searchResult.length ? (
+          <ScrollView
+            style={{flex: 1}}
+            contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 20}}
+            onScroll={handleScroll}
+            scrollEventThrottle={50}
+            showsVerticalScrollIndicator={false}>
+            {mapResult}
+          </ScrollView>
+        ) : (
+          <View style={styles.preloader}>
+            <EmptyEvent text={t('no_results')} icon="SearchIcon" />
+          </View>
+        )}
+      </>
       {setting && (
-        <SearchSettingsModal isVisible={setting} setVisible={setSetting} />
+        <SearchSettingsModal
+          selectedOnlineOption={selectedOnlineOption}
+          selectedRatingOption={selectedRatingOption}
+          isVisible={setting}
+          setVisible={setSetting}
+          filterParams={filterParams}
+          setFilterParams={changeFilterParams}
+        />
       )}
     </View>
   );

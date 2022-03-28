@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
     marginLeft: 2,
   },
   line: {
-    borderBottomWidth: 0.3,
-    borderBottomColor: colorPalet.black50,
+    borderBottomWidth: 0.5,
+    borderBottomColor: colorPalet.black10,
     marginVertical: 5,
   },
 });

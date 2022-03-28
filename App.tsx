@@ -5,6 +5,7 @@ import store from './src/store/store';
 import './i18n.config';
 import {MenuProvider} from 'react-native-popup-menu';
 import PreloaderModal from './src/components/global_components/preloader_modal';
+import QrModal from './src/components/global_components/qr_modal';
 
 // TODO: Add and translate all texts in Welcome screens
 // TODO: Locolize all permissions for IOS
@@ -15,6 +16,7 @@ const App = () => {
       <MenuProvider>
         <RootNavigator />
         <PreloaderModal />
+        <QrModal />
       </MenuProvider>
     </Provider>
   );

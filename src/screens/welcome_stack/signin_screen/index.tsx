@@ -19,6 +19,11 @@ import DialogPopup from '../../../components/global_components/dialog_popup';
 import {TFunctionResult} from 'i18next';
 import {storeSecureData} from '../../../hooks/localStorage';
 import {NavigatorTypes} from '../../../navigation';
+import {userSlice} from '../../../store/reducers/UserSlice';
+import {classifiersAPI} from '../../../services/ClassifiersService';
+import {classifiersSlice} from '../../../store/reducers/ClassifiersSlice';
+import {sortRegister} from '../../../hooks/registerSorter';
+import {CommonActions} from '@react-navigation/native';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -76,8 +81,12 @@ const SigninScreen = ({navigation}: ScreenProps) => {
   // redux side
   const dispatch = useAppDispatch();
   const {setLoading} = paramsSlice.actions;
-  const [login] = userAPI.useLoginMutation();
+  const {setSpecialitiesList} = classifiersSlice.actions;
+  const {setAccessData, setUserData, setUserRegisters} = userSlice.actions;
   const {lang} = useAppSelector(state => state.globalReducer);
+  const [login] = userAPI.useLoginMutation();
+  const [getSpecialities] = classifiersAPI.useGetSpecialityMutation();
+  const [getUserRegisters] = userAPI.useGetUserRegistersMutation();
 
   const setPassFunc = (text: string) => {
     if (passError) setPassError(false);
@@ -105,18 +114,49 @@ const SigninScreen = ({navigation}: ScreenProps) => {
     })
       .unwrap()
       .then(payload => {
-        dispatch(setLoading(false));
-        console.log('sign in payload: ', payload);
         if (payload.token) {
           storeSecureData(payload, lang);
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: NavigatorTypes.stacks.mainStack,
-              },
-            ],
-          });
+          dispatch(
+            setAccessData({
+              id: payload.user.id,
+              token: payload.token,
+              phone_number: payload.user.phone_number,
+            }),
+          );
+          dispatch(setUserData(payload.user));
+          getSpecialities({token: payload.token})
+            .unwrap()
+            .then(getSpecialities => {
+              dispatch(setSpecialitiesList(getSpecialities));
+              getUserRegisters({
+                userId: payload.user.id,
+                token: payload.token,
+              })
+                .unwrap()
+                .then(registers => {
+                  const sorted = sortRegister(registers);
+                  dispatch(setUserRegisters({...sorted}));
+                  dispatch(setLoading(false));
+                  setTimeout(() => {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 0,
+                        routes: [{name: NavigatorTypes.stacks.mainStack}],
+                      }),
+                    );
+                  }, 400);
+                })
+                .catch(e => {
+                  console.log('Register error: ', e);
+                });
+            })
+            .catch(error => {
+              dispatch(setLoading(false));
+              setErrorParams(defaultError);
+              setTimeout(() => {
+                setErrorModal(true);
+              }, 1000);
+            });
         }
       })
       .catch(error => {

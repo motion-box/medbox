@@ -135,7 +135,6 @@ export const Button = ({scrollY, onPress, options}: BtnProps) => {
       height: wh,
     };
   });
-
   return (
     <AnimatedTouchableOpacity
       onPress={onPress}
@@ -148,7 +147,7 @@ export const Button = ({scrollY, onPress, options}: BtnProps) => {
           marginRight: options?.marginRight || 0,
         },
       ]}>
-      {options?.icon && (
+      {options?.icon ? (
         <Animated.View style={iStyle}>
           {React.createElement(Icons[options.icon], {
             width: '100%',
@@ -158,13 +157,24 @@ export const Button = ({scrollY, onPress, options}: BtnProps) => {
             rotate: options.iconRotate,
           })}
         </Animated.View>
+      ) : (
+        <>
+          {options?.image !== undefined ? (
+            <Animated.Image
+              style={rStyle}
+              source={
+                options?.image
+                  ? {
+                      uri: options?.image,
+                    }
+                  : require('../../../../resources/images/user_logo.png')
+              }
+            />
+          ) : null}
+        </>
       )}
-      {options?.image && (
-        <Animated.Image
-          style={rStyle}
-          source={require('../../../../resources/images/img.png')}
-        />
-      )}
+      {/* {options?.image && (
+      )} */}
     </AnimatedTouchableOpacity>
   );
 };

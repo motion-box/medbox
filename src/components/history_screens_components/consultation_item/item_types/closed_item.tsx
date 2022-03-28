@@ -16,17 +16,27 @@ interface Iprops {
     imageUrl: string;
   };
   workPlace: {
-    imageUrl: string;
+    imageUrl: string | undefined;
     name: string;
     price: number;
   };
   date: string;
   conclusion: string;
+  onDoctorInfoPress: () => void;
+  onOtherPress: (isEstimate: boolean) => void;
 }
 
 const ClosedItem: React.FC<Iprops> = props => {
   const {t} = useTranslation();
-  const {type, doctor, workPlace, date, conclusion} = props;
+  const {
+    type,
+    doctor,
+    workPlace,
+    date,
+    conclusion,
+    onDoctorInfoPress,
+    onOtherPress,
+  } = props;
   return (
     <View>
       <CardTitler
@@ -41,19 +51,19 @@ const ClosedItem: React.FC<Iprops> = props => {
                 icon: 'NurseIcon',
                 text: t('doctor_info'),
                 disabled: false,
-                onPress: () => console.log('doctor info'),
+                onPress: onDoctorInfoPress,
               },
               {
                 icon: 'StarFillIcon',
                 text: t('estimate'),
                 disabled: false,
-                onPress: () => console.log('estimate'),
+                onPress: () => onOtherPress(true),
               },
               {
                 icon: 'AlarmWarningIcon',
                 text: t('complain'),
                 disabled: false,
-                onPress: () => console.log('complain'),
+                onPress: () => onOtherPress(false),
               },
             ],
           },
@@ -66,7 +76,7 @@ const ClosedItem: React.FC<Iprops> = props => {
           backgroundColor: colorPalet.bgColor,
           marginTop: 10,
         }}>
-        <View style={{position: 'absolute', top: -10, right: 20}}>
+        <View style={{position: 'absolute', top: -10, right: 10}}>
           <OnlineOffline type={type} />
         </View>
         <HospitalInfo {...workPlace} color="bgColor" />

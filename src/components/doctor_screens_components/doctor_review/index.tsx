@@ -3,6 +3,8 @@ import {View, Touchable, Text} from 'react-native';
 import styles from './style';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
+  FadeInDown,
+  FadeOutDown,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
@@ -18,27 +20,81 @@ import moment from 'moment';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useAppSelector} from '../../../hooks/redux';
 import {CloseCircleIcon} from '../../../resources/icons/icons';
+import {EstimateModel} from '../../../models/DoctorModel';
+import EmptyEvent from '../../global_components/empty_event';
 
-interface Iprops {}
+interface Iprops {
+  data: Array<EstimateModel>;
+}
 
 const DoctorReview: React.FC<Iprops> = props => {
+  const {data} = props;
   const {t} = useTranslation();
   const {screen} = useAppSelector(state => state.globalReducer);
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
+  const [allReviews, setReviews] = useState<Array<EstimateModel>>([]);
+  const [filteredRates, setFilteredRates] = useState({
+    average: 0,
+    amount: 0,
+    byNumbers: {
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0,
+    },
+  });
+
   useEffect(() => {
-    console.log(activeFilter);
-  }, [activeFilter]);
+    if (data.length) {
+      setReviews(data);
+
+      const rates = data.map(item => item.rate);
+      const average = rates.reduce((a, b) => a + b, 0) / rates.length;
+      var ratesNumber = rates.reduce<{[key: number]: number}>(
+        (cnt, cur) => ((cnt[cur] = cnt[cur] + 1 || 1), cnt),
+        {},
+      );
+      if (rates.length) {
+        setFilteredRates({
+          amount: rates.length,
+          average: parseFloat(average.toFixed(1)),
+          byNumbers: {
+            5: ratesNumber[5] ? ratesNumber['5'] : 0,
+            4: ratesNumber[4] ? ratesNumber['4'] : 0,
+            3: ratesNumber[3] ? ratesNumber['3'] : 0,
+            2: ratesNumber[2] ? ratesNumber['2'] : 0,
+            1: ratesNumber[1] ? ratesNumber['1'] : 0,
+          },
+        });
+      }
+    }
+  }, [data]);
+
+  const onFilterPress = (id: number | null) => {
+    if (id === null) {
+      setReviews(data);
+      setActiveFilter(null);
+      return;
+    }
+    let byStar = data.filter(item => item.rate === id);
+    setReviews(byStar);
+    setActiveFilter(id);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.titler}>{t('reviews')}</Text>
       <View style={styles.review_cont}>
         <View style={styles.review_left_cont}>
           <View style={styles.numbers_cont}>
-            <Text style={styles.average_number}>4.3</Text>
+            <Text style={styles.average_number}>{filteredRates.average}</Text>
             <Text style={styles.overal_number}>/5</Text>
           </View>
-          <Text style={styles.all_reviews}>{`120 ${t('reviews')}`}</Text>
-          <RatingStars rate={4} textAcitve={false} />
+          <Text style={styles.all_reviews}>{`${filteredRates.amount} ${t(
+            'reviews',
+          )}`}</Text>
+          <RatingStars rate={filteredRates.average} textAcitve={false} />
         </View>
         <View style={styles.stars_cont}>
           {[5, 4, 3, 2, 1].map(item => {
@@ -46,8 +102,8 @@ const DoctorReview: React.FC<Iprops> = props => {
               <React.Fragment key={item}>
                 <StarLine
                   stars={item as 1 | 2 | 3 | 4 | 5}
-                  overal={120}
-                  exact={70}
+                  overal={filteredRates.amount}
+                  exact={filteredRates.byNumbers[item as 1 | 2 | 3 | 4 | 5]}
                 />
                 {item > 1 && <View style={styles.spacer} />}
               </React.Fragment>
@@ -56,40 +112,30 @@ const DoctorReview: React.FC<Iprops> = props => {
         </View>
       </View>
       <View style={styles.filter_cont}>
-        <Filter
-          screenWidth={screen.width}
-          stars={5}
-          isActive={activeFilter}
-          setActive={setActiveFilter}
-        />
-        <Filter
-          screenWidth={screen.width}
-          stars={4}
-          isActive={activeFilter}
-          setActive={setActiveFilter}
-        />
-        <Filter
-          screenWidth={screen.width}
-          stars={3}
-          isActive={activeFilter}
-          setActive={setActiveFilter}
-        />
-        <Filter
-          screenWidth={screen.width}
-          stars={2}
-          isActive={activeFilter}
-          setActive={setActiveFilter}
-        />
-        <Filter
-          screenWidth={screen.width}
-          stars={1}
-          isActive={activeFilter}
-          setActive={setActiveFilter}
-        />
+        {[5, 4, 3, 2, 1].map(item => (
+          <Filter
+            key={item}
+            screenWidth={screen.width}
+            stars={item as 5 | 4 | 3 | 2 | 1}
+            isActive={activeFilter}
+            setActive={onFilterPress}
+          />
+        ))}
       </View>
-      {[0, 1, 2, 3, 4, 5].map(item => {
-        return <CommentView key={item} />;
-      })}
+      {allReviews.length ? (
+        allReviews.map(item => (
+          <Animated.View
+            entering={FadeInDown}
+            exiting={FadeOutDown}
+            key={item.id}>
+            <CommentView data={item} />
+          </Animated.View>
+        ))
+      ) : (
+        <View>
+          <EmptyEvent text={t('no_reviews')} icon="StarFillIcon" />
+        </View>
+      )}
     </View>
   );
 };
@@ -101,14 +147,17 @@ interface StarLineProps {
 }
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 const StarLine = (props: StarLineProps) => {
+  const {t} = useTranslation();
   const {stars, overal, exact} = props;
   const flex = useSharedValue(0);
   useEffect(() => {
-    flex.value = withDelay(
-      500,
-      withTiming(parseFloat((exact / overal).toFixed(1))),
-    );
-  }, []);
+    if (overal) {
+      flex.value = withDelay(
+        500,
+        withTiming(parseFloat((exact / overal).toFixed(1))),
+      );
+    }
+  }, [overal]);
   const rStyle = useAnimatedStyle(() => {
     return {
       flex: flex.value,
@@ -116,7 +165,9 @@ const StarLine = (props: StarLineProps) => {
   });
   return (
     <View style={styles.line_cont}>
-      <Text style={styles.line_text}>{stars} star</Text>
+      <Text style={styles.line_text}>
+        {stars} {t('star')}
+      </Text>
       <View style={{flex: 1, justifyContent: 'center'}}>
         <View style={styles.line}>
           <AnimatedLinearGradient
@@ -138,6 +189,7 @@ interface FilterProps {
   setActive: (state: number | null) => void;
 }
 const Filter = (props: FilterProps) => {
+  const {t} = useTranslation();
   const {screenWidth, stars, isActive, setActive} = props;
   const itemWidth = (screenWidth - 80) / 5;
   const width = useSharedValue(itemWidth);
@@ -150,7 +202,6 @@ const Filter = (props: FilterProps) => {
   }, [isActive]);
 
   const onPress = () => {
-    console.log(stars);
     width.value = withTiming(itemWidth + 26);
     setActive(isActive !== stars ? stars : null);
   };
@@ -169,7 +220,7 @@ const Filter = (props: FilterProps) => {
     };
   });
   return (
-    <Animated.View style={rStyle}>
+    <Animated.View style={[rStyle]}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
@@ -183,7 +234,7 @@ const Filter = (props: FilterProps) => {
               marginRight: isActive === stars ? 10 : 0,
             },
           ]}>
-          {stars} star
+          {stars} {t('star')}
         </Text>
         {isActive === stars && (
           <CloseCircleIcon width="16" height="16" color={colorPalet.white50} />
@@ -192,28 +243,23 @@ const Filter = (props: FilterProps) => {
     </Animated.View>
   );
 };
-interface CommentViewProps {}
-const CommentView = (props: CommentViewProps) => {
+interface CommentViewProps {
+  data: EstimateModel;
+}
+const CommentView = ({data}: CommentViewProps) => {
   return (
     <View style={styles.comment}>
       <CardTitler
-        name="Alisa Miller"
-        imageUrl={`${require('../../../resources/images/img.png')}`}
-        stars={3}
+        name={`${data.user.first_name} ${data.user.last_name}`}
+        imageUrl={data.user.photo}
+        stars={data.rate}
         right={{
           centered: {
-            text: moment('2022-01-12T10:30', 'YYYY-MM-DDTHH:mm').format(
-              'DD.MM.YY HH:mm',
-            ),
+            text: moment(data.created_time).format('DD.MM.YY HH:mm'),
           },
         }}
       />
-      <Text style={styles.comment_text}>
-        Technical and Procedural Aspects of a Staged Repair of a Giant
-        Post-Dissection Aneurysm by Using Endosizing- Based Endovascular
-        Stenting Following Aortic Surgical Repair with Simultaneous Debranching
-        Technique
-      </Text>
+      <Text style={styles.comment_text}>{data.comment}</Text>
     </View>
   );
 };

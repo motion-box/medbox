@@ -1,4 +1,4 @@
-package com.medbox;
+package com.medboxuz;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

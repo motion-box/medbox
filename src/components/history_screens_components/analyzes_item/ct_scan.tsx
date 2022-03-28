@@ -24,7 +24,9 @@ const CtScan: React.FC<Iprops> = props => {
       {data.images.length ? (
         <>
           <Text style={styles.title}>{title}</Text>
-          <Pressable onPress={() => setVisible(true)}>
+          <Pressable
+            onPress={() => setVisible(true)}
+            style={{marginBottom: 10}}>
             <Image
               source={data.images[0]}
               style={[

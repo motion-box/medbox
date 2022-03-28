@@ -1,3 +1,5 @@
+import {SpecialityModel} from './ClassifiersModel';
+import {DoctorModel, ClinicModel} from './DoctorModel';
 export type FamilyMemberModel = {
   id: string;
   name: string;
@@ -6,88 +8,42 @@ export type FamilyMemberModel = {
 };
 export type FamilyModel = Array<FamilyMemberModel>;
 
-export type UserInfoModel = {
-  bloodType: string;
-  age: number;
-  sex: 'male' | 'female';
-  address: string;
-};
-
-export type ClinicModel = {
-  name: string;
-  doctor: {
-    name: string;
-    imageUrl: string;
-    speciality: string;
-  };
-};
-
-export interface UserModel {
-  name: string;
-  email: string;
-  imageUrl: string;
-  userInfo: UserInfoModel;
-  family: FamilyModel;
+export interface UserModel extends UserTypes, UserInfoType, UserAddressType {
+  doctor: DoctorModel<SpecialityModel>;
   clinic: ClinicModel;
+  in_call_doctor: any;
 }
-
-export interface UserOveralModel extends UserTypes, UserAddressType {}
 
 export interface UserTypes {
   id: number;
-  phone_number: string;
   photo: string;
+  phone_number: string;
   first_name: string;
   last_name: string;
+  email: string;
+  allergies: IdleType[];
+  pathologies: IdleType[];
+}
+export type UserInfoType = {
+  blood_type: BloodType | null;
   birth_date: string;
   gender: 'male' | 'female';
-  email: string;
-  allergies: idleType[];
-  pathologies: idleType[];
-}
+};
 
 export type UserAddressType = {
   latitude: string;
   longitude: string;
-  district: {
-    id: 0;
-    region_id: string;
-    name_uz: string;
-    name_ru: string;
-    name_en: string;
-  };
+  district: string;
   address: string;
 };
 
-type idleType = {
+export type IdleType = {
   id: number;
   name_uz: string;
   name_ru: string;
   name_en: string;
 };
-
-// type user = {
-//   name: string;
-//   email: string;
-//   imageUrl: string;
-//   userInfo: {
-//     bloodType: string;
-//     age: number;
-//     sex: 'male' | 'female';
-//     address: string;
-//   };
-//   family: {
-//     id: string;
-//     name: string;
-//     age: number;
-//     imageUrl: string;
-//   }[]; // Массив так как может быть больше 1 человек
-//   clinic: {
-//     name: string; // Название клиники
-//     doctor: {
-//       name: string;
-//       imageUrl: string;
-//       speciality: string;
-//     };
-//   }
-// }
+export type BloodType = {
+  id: number;
+  name: string;
+};

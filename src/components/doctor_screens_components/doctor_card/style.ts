@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 10,
+    backgroundColor: colorPalet.bgColor,
   },
   text_cont: {
     marginLeft: 5,
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
   },
   places_cont: {
     marginTop: 10,
+    height: 70,
   },
   places_item_cont: {
     justifyContent: 'center',
@@ -92,6 +94,20 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colorPalet.white100,
     borderRadius: 10,
+  },
+  holder_cont: {
+    marginTop: 10,
+    marginHorizontal: 20,
+    height: 70,
+    borderRadius: 10,
+    backgroundColor: colorPalet.white100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  holder_text: {
+    fontSize: 14,
+    color: colorPalet.black50,
+    fontFamily: fonts.sf_medium,
   },
 });
 

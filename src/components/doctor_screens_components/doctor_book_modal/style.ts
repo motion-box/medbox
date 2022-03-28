@@ -37,6 +37,16 @@ const styles = StyleSheet.create({
     bottom: 20,
     paddingHorizontal: 20,
   },
+  loader: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: colorPalet.white50,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default styles;

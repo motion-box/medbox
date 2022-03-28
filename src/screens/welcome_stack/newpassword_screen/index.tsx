@@ -21,7 +21,6 @@ import MessageModal, {
 import {userAPI} from '../../../services/UserService';
 import {paramsSlice} from '../../../store/reducers/ParamsSlice';
 import DialogPopup from '../../../components/global_components/dialog_popup';
-import {storeSecureData} from '../../../hooks/localStorage';
 import {WelcomeScreensType} from '../../../navigation/WelcomeNavigator';
 
 interface ScreenProps {

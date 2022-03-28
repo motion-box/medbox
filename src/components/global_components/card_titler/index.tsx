@@ -1,23 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, Image, TouchableOpacity, Pressable} from 'react-native';
+import React from 'react';
+import {View, Text, Image} from 'react-native';
 import styles from './style';
 import RatingStars from '../rating_stars';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Icons from '../../../resources/icons/icons';
-import {colorPalet} from '../../../resources/style/globalStyle';
-import Animated, {
-  FadeInDown,
-  FadeOutDown,
-  measure,
-} from 'react-native-reanimated';
-import {useAppDispatch, useAppSelector} from '../../../hooks/redux';
-import {paramsSlice} from '../../../store/reducers/ParamsSlice';
 import PopupMenu from '../popup_menu';
 
 interface Iprops {
   imageUrl: string;
   name: string;
-  stars?: 1 | 2 | 3 | 4 | 5;
+  stars?: 1 | 2 | 3 | 4 | 5 | number;
   subtitle?: string;
   clipper?: 'white' | 'bg';
   right: {
@@ -27,34 +19,17 @@ interface Iprops {
   };
 }
 
-// centered: {
-//   text: moment('2022-01-12T10:30', 'YYYY-MM-DDTHH:mm').format(
-//     'DD.MM.YY HH:mm',
-//   ),
-//   options: [
-//     {
-//       icon: 'AlertIcon',
-//       text: 'Doctor',
-//       onPress: () => console.log('doctor'),
-//     },
-//   ],
-// },
-// boldFirst: {
-//   title: 'Crated:',
-//   subtitle: moment('2022-01-12', 'YYYY-MM-DD').format('DD.MM.YY'),
-// },
-// boldSecond: {
-//   title: 'Cardiologist',
-//   subtitle: '≈150 000 uzs',
-// },
-
 const CardTitler: React.FC<Iprops> = props => {
   const {imageUrl, name, stars, subtitle, clipper = 'white', right} = props;
   return (
     <View style={styles.container}>
       <View style={styles.left_side}>
         <Image
-          source={require('../../../resources/images/img.png')}
+          source={
+            imageUrl
+              ? {uri: imageUrl}
+              : require('../../../resources/images/user_logo.png')
+          }
           style={styles.image}
         />
         <View
@@ -66,8 +41,10 @@ const CardTitler: React.FC<Iprops> = props => {
           <Text numberOfLines={1} ellipsizeMode="clip" style={styles.title}>
             {name}
           </Text>
-          {stars && <RatingStars rate={stars} textAcitve={true} />}
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          {stars !== undefined ? (
+            <RatingStars rate={stars} textAcitve={true} />
+          ) : null}
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
           <LinearGradient
             colors={
               clipper === 'white'
@@ -81,9 +58,9 @@ const CardTitler: React.FC<Iprops> = props => {
         </View>
       </View>
       <View style={styles.right_side}>
-        {right?.boldFirst && <BoldFirstView {...right.boldFirst} />}
-        {right?.boldSecond && <BoldSecondView {...right.boldSecond} />}
-        {right?.centered && <CenteredView {...right.centered} />}
+        {right?.boldFirst ? <BoldFirstView {...right.boldFirst} /> : null}
+        {right?.boldSecond ? <BoldSecondView {...right.boldSecond} /> : null}
+        {right?.centered ? <CenteredView {...right.centered} /> : null}
       </View>
     </View>
   );
@@ -132,7 +109,7 @@ const CenteredView = (props: CenteredViewType) => {
   return (
     <View style={styles.centered}>
       <Text style={styles.centered_text}>{text}</Text>
-      {options && <PopupMenu options={options} />}
+      {options ? <PopupMenu options={options} /> : null}
     </View>
   );
 };

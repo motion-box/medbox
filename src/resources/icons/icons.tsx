@@ -52,16 +52,22 @@ export const CloseIcon = ({width, height, color}: Iprops) => {
     </Svg>
   );
 };
-export const PlusIcon = ({width, height, color}: Iprops) => {
+export const PlusIcon = ({width, height, color, isGradient}: Iprops) => {
   return (
     <Svg
       width={width || '24'}
       height={height || '24'}
       viewBox="0 0 24 24"
       fill="none">
+      <Defs>
+        <LinearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0%" stopColor="#05F883" stopOpacity="1" />
+          <Stop offset="100%" stopColor="#00D1FB" stopOpacity="1" />
+        </LinearGradient>
+      </Defs>
       <Path
         d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"
-        fill={color || 'black'}
+        fill={isGradient ? 'url(#grad)' : color || 'black'}
       />
     </Svg>
   );
@@ -743,12 +749,88 @@ export const StarFillIcon = ({width, height, color}: Iprops) => {
     </Svg>
   );
 };
+export const NavigationIcon = ({width, height, color, isGradient}: Iprops) => {
+  return (
+    <Svg
+      width={width || '24'}
+      height={height || '24'}
+      viewBox="0 0 24 24"
+      fill="none">
+      <Path
+        d="M2.9001 2.3L21.7051 8.568C21.8024 8.60026 21.8875 8.66167 21.9488 8.7439C22.01 8.82613 22.0445 8.92521 22.0476 9.02771C22.0506 9.1302 22.0221 9.23116 21.9658 9.3169C21.9096 9.40263 21.8283 9.469 21.7331 9.507L13.0001 13L8.5751 21.85C8.53007 21.9401 8.45887 22.0145 8.37083 22.0635C8.28278 22.1125 8.182 22.1337 8.08169 22.1244C7.98138 22.1151 7.88621 22.0757 7.80866 22.0114C7.73112 21.9471 7.6748 21.8609 7.6471 21.764L2.2601 2.911C2.23515 2.82342 2.23459 2.73068 2.25849 2.6428C2.28239 2.55492 2.32983 2.47524 2.3957 2.41235C2.46157 2.34946 2.54337 2.30576 2.63226 2.28596C2.72116 2.26616 2.81377 2.27102 2.9001 2.3Z"
+        fill={isGradient ? 'url(#grad)' : color || 'black'}
+      />
+      <Defs>
+        <LinearGradient
+          id="grad"
+          x1="12.5"
+          y1="12"
+          x2="-1.94947"
+          y2="5.2213"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#00D1FB" />
+          <Stop offset="1" stopColor="#05F883" />
+        </LinearGradient>
+      </Defs>
+    </Svg>
+  );
+};
+export const NoInternetIcon = ({width, height, color}: Iprops) => {
+  return (
+    <Svg
+      width={width || '24'}
+      height={height || '24'}
+      viewBox="0 0 24 24"
+      fill="none">
+      <Path
+        d="M12 18C12.714 18 13.37 18.25 13.886 18.666L12 21L10.114 18.666C10.6474 18.2339 11.3134 17.9987 12 18ZM2.80796 1.39301L20.485 19.071L19.071 20.485L15.389 16.805L15.142 17.111C14.2533 16.3908 13.1438 15.9985 12 16C10.8566 15.9985 9.74749 16.3904 8.85896 17.11L6.97396 14.776C8.28802 13.7115 9.90686 13.0929 11.596 13.01L9.82296 11.238C8.3195 11.5724 6.91403 12.2508 5.71696 13.22L3.82996 10.887C4.90777 10.0142 6.11844 9.31975 7.41596 8.83001L5.88496 7.30001C4.69829 7.83072 3.58563 8.51344 2.57496 9.33101L0.688965 6.99701C1.60396 6.25701 2.59196 5.60601 3.64096 5.05501L1.39296 2.80801L2.80796 1.39301ZM16.084 11.87L12.216 8.00301L12 8.00001C15.095 8.00001 17.937 9.08101 20.17 10.887L18.284 13.221C17.6121 12.6772 16.8726 12.2227 16.084 11.869V11.87ZM12 3.00001C16.285 3.00001 20.22 4.49701 23.31 6.99701L21.426 9.33001C18.7597 7.17032 15.4312 5.99442 12 6.00001C11.428 6.00001 10.864 6.03201 10.31 6.09401L7.72296 3.51101C9.09396 3.17701 10.527 3.00001 12 3.00001Z"
+        fill={color || 'black'}
+      />
+    </Svg>
+  );
+};
+export const CardIcon = ({color}: {color?: string}) => {
+  return (
+    <Svg width="30" height="20" viewBox="0 0 30 20" fill="none">
+      <Path
+        d="M30 7.77778V18.8889C30 19.1836 29.842 19.4662 29.5607 19.6746C29.2794 19.8829 28.8978 20 28.5 20H1.5C1.10218 20 0.720644 19.8829 0.43934 19.6746C0.158035 19.4662 0 19.1836 0 18.8889V7.77778H30ZM30 5.55556H0V1.11111C0 0.816426 0.158035 0.533811 0.43934 0.325437C0.720644 0.117063 1.10218 0 1.5 0H28.5C28.8978 0 29.2794 0.117063 29.5607 0.325437C29.842 0.533811 30 0.816426 30 1.11111V5.55556ZM19.5 14.4444V16.6667H25.5V14.4444H19.5Z"
+        fill={color || '#1D202D'}
+      />
+    </Svg>
+  );
+};
+export const CheckIcon = ({width, height, color, isGradient}: Iprops) => {
+  return (
+    <Svg
+      width={width || '24'}
+      height={height || '24'}
+      viewBox="0 0 24 24"
+      fill="none">
+      <Path
+        d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM11.003 16L18.073 8.929L16.659 7.515L11.003 13.172L8.174 10.343L6.76 11.757L11.003 16Z"
+        fill={isGradient ? 'url(#grad)' : color || 'black'}
+      />
+      <Defs>
+        <LinearGradient
+          id="grad"
+          x1="12.5"
+          y1="12"
+          x2="-1.94947"
+          y2="5.2213"
+          gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#00D1FB" />
+          <Stop offset="1" stopColor="#05F883" />
+        </LinearGradient>
+      </Defs>
+    </Svg>
+  );
+};
 
 const AllIconsName = [
   'EyeOffIcon',
   'EyeOnIcon',
   'CloseIcon',
-  'PlusIcon',
+  'PlusIcon', // gradiented
   'MinusIcon',
   'StarIcon', // gradiented
   'ChatSmileIcon',
@@ -790,6 +872,10 @@ const AllIconsName = [
   'CircleIcon', // radio button background
   'DeleteBackIcon',
   'StarFillIcon',
+  'NavigationIcon',
+  'NoInternetIcon',
+  'CardIcon', // not standart
+  'CheckIcon', // is gradient
 ] as const;
 
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<

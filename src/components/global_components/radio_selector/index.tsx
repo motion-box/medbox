@@ -9,14 +9,15 @@ import styles from './style';
 
 interface Iprops {
   data: string[];
+  activeId?: number;
   bgColor?: colorPaletTypes;
   onSelect: (state: number) => void;
 }
 
 const RadioSelector: React.FC<Iprops> = props => {
-  const {data, bgColor, onSelect} = props;
+  const {data, activeId, bgColor, onSelect} = props;
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(activeId || 0);
 
   const select = (index: number) => {
     onSelect(index);

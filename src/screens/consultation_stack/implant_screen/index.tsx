@@ -8,6 +8,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import styles from './style';
 import Button from '../../../components/global_components/button';
 import {NavigatorTypes} from '../../../navigation';
+import LottieView from 'lottie-react-native';
 
 const APP_NAME = 'medbox';
 const ACC_NAME = 'medbox';
@@ -90,11 +91,14 @@ const ImplantScreen = ({navigation}: ScreenProps) => {
         style={{
           width: screen.width - 40,
           height: screen.width - 40,
-          borderWidth: 1,
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Text>ANIMATION</Text>
+        <LottieView
+          source={require('../../../resources/lottie/Puls_animation.json')}
+          loop
+          autoPlay
+        />
       </View>
       <Text style={styles.title}>Alisa Miller</Text>
       <Text style={styles.description}>

@@ -4,7 +4,7 @@ import {colorPalet} from '../../../resources/style/globalStyle';
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    // marginTop: 20,
     marginHorizontal: 20,
     padding: 10,
     backgroundColor: colorPalet.white100,

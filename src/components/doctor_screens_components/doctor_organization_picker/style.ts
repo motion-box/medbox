@@ -45,5 +45,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.sf_semibold,
   },
+  no_work_text: {
+    fontSize: 14,
+    fontFamily: fonts.sf_regular,
+    color: colorPalet.black50,
+    marginVertical: 10,
+  },
 });
 export default styles;

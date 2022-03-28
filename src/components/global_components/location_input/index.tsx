@@ -1,40 +1,59 @@
 import React from 'react';
-import {View, Pressable, Text} from 'react-native';
-import {MapPinIcon} from '../../../resources/icons/icons';
-import {colorPalet} from '../../../resources/style/globalStyle';
+import {StackNavigationProp} from '@react-navigation/stack';
 import styles from './style';
+import {Pressable, Text} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {NavigatorTypes} from '../../../navigation';
+import {colorPalet} from '../../../resources/style/globalStyle';
+import {MapPinIcon} from '../../../resources/icons/icons';
+import Geolocation from 'react-native-geolocation-service';
+import {useAndroidLocationPermission} from '../../../hooks/useAndroidLocationPermission';
 
 interface Iprops {
   location: locationType | null;
-  setLocation: (state: locationType) => void;
   placeholder: string;
 }
 export type locationType = {
-  text: string;
+  address: string;
   lat: string;
   lng: string;
 };
 
 const LocationInput: React.FC<Iprops> = props => {
-  const {location, setLocation, placeholder = 'Show address'} = props;
+  const {location, placeholder} = props;
+  const navigation = useNavigation<StackNavigationProp<any, any>>();
+
+  const onChoosePress = async () => {
+    const permission = await useAndroidLocationPermission();
+    if (permission === 'granted') {
+      Geolocation.getCurrentPosition(
+        position => {
+          navigation.navigate(NavigatorTypes.stacks.mapScreen, {
+            taskType: 'get_position',
+            userPos: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+          });
+        },
+        error => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+        },
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      );
+    }
+  };
 
   return (
-    <Pressable
-      style={styles.container}
-      onPress={() =>
-        setLocation({
-          text: 'Uzbekistan, Tashkent, Yakkasaray, Ivlieva 17, Uzbekistan, Tashkent, Yakkasaray, Ivlieva 17',
-          lat: '3.200',
-          lng: '30.300',
-        })
-      }>
+    <Pressable style={styles.container} onPress={onChoosePress}>
       <Text
         numberOfLines={1}
         style={[
           styles.text,
           {color: location ? colorPalet.black100 : colorPalet.black20},
         ]}>
-        {location?.text || placeholder}
+        {location?.address || placeholder}
       </Text>
       <MapPinIcon width="16" height="16" color={colorPalet.black50} />
     </Pressable>

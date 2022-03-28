@@ -5,16 +5,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 30,
   },
   image: {
     width: 36,
     height: 36,
     backgroundColor: colorPalet.white100,
     borderRadius: 5,
+    marginRight: 5,
   },
   name_cont: {
     flex: 1,
-    marginLeft: 5,
     marginRight: 10,
   },
   name: {

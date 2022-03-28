@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import styles from './style';
 import {useTranslation} from 'react-i18next';
@@ -24,8 +24,12 @@ import {TFunctionResult} from 'i18next';
 import {userAPI} from '../../../services/UserService';
 import moment from 'moment';
 import {storeSecureData} from '../../../hooks/localStorage';
-import {useAppSelector} from '../../../hooks/redux';
+import {useAppDispatch, useAppSelector} from '../../../hooks/redux';
 import {NavigatorTypes} from '../../../navigation';
+import {userSlice} from '../../../store/reducers/UserSlice';
+import {classifiersSlice} from '../../../store/reducers/ClassifiersSlice';
+import {classifiersAPI} from '../../../services/ClassifiersService';
+import {paramsSlice} from '../../../store/reducers/ParamsSlice';
 
 interface ScreenProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -37,11 +41,16 @@ interface ScreenProps {
     };
   };
 }
-const date = new Date();
 
 const UserFormScreen = ({navigation, route}: ScreenProps) => {
   const {styled_phone, phone, password} = route.params;
   const {lang} = useAppSelector(state => state.globalReducer);
+  const dispatch = useAppDispatch();
+  const {choosenLocation} = useAppSelector(state => state.userReducer);
+  const {setAccessData, setUserData, setChoosenLocation} = userSlice.actions;
+  const {setSpecialitiesList} = classifiersSlice.actions;
+  const {setLoading} = paramsSlice.actions;
+  const [getSpecialities] = classifiersAPI.useGetSpecialityMutation();
   const {t} = useTranslation();
   const opacity = useSharedValue(0);
   const [firstName, setFirstName] = useState('');
@@ -49,19 +58,35 @@ const UserFormScreen = ({navigation, route}: ScreenProps) => {
   const [date, setDate] = useState('');
   const [gender, setGender] = useState(0);
   const [email, setEmail] = useState('');
-  const [location, setLocation] = useState<locationType | null>(null);
+  const [address, setAddress] = useState({
+    address: '',
+    lat: '',
+    lng: '',
+  });
   const [dialogText, setDialogText] = useState<TFunctionResult | false>(false);
-
   const [registrate] = userAPI.useRegisterMutation();
 
+  useEffect(() => {
+    console.log('User_form_screen:', choosenLocation);
+    if (choosenLocation) {
+      setAddress({
+        lat: choosenLocation.latitude,
+        lng: choosenLocation.longitude,
+        address: choosenLocation.address,
+      });
+    }
+  }, [choosenLocation]);
+
   const checkFields = () => {
-    if (!firstName || !lastName || !date || !email || !location) {
+    if (!firstName || !lastName || !date || !email || !address.lat) {
       setDialogText(t('fill_warn'));
+      return;
     }
     registrateUser();
   };
 
   const registrateUser = async () => {
+    dispatch(setLoading(true));
     registrate({
       phone_number: phone,
       password: password,
@@ -70,26 +95,50 @@ const UserFormScreen = ({navigation, route}: ScreenProps) => {
       birth_date: moment(date, 'DD.MM.YYYY').format('YYYY-MM-DD'),
       gender: gender === 0 ? 'male' : 'female',
       email: email,
-      longitude: location!.lng,
-      latitude: location!.lat,
+      longitude: address!.lng,
+      latitude: address!.lat,
     })
       .unwrap()
       .then(payload => {
         console.log('user form payload:', payload);
         if (payload.token) {
           storeSecureData(payload, lang);
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: NavigatorTypes.stacks.mainStack,
-              },
-            ],
-          });
+          dispatch(
+            setAccessData({
+              id: payload.user.id,
+              token: payload.token,
+              phone_number: payload.user.phone_number,
+            }),
+          );
+          getSpecialities({token: payload.token})
+            .unwrap()
+            .then(getSpecialities => {
+              dispatch(setSpecialitiesList(getSpecialities));
+              dispatch(setUserData(payload.user));
+              dispatch(setChoosenLocation(null));
+              dispatch(setLoading(false));
+              setTimeout(() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: NavigatorTypes.stacks.mainStack,
+                    },
+                  ],
+                });
+              }, 400);
+            })
+            .catch(error => {
+              dispatch(setLoading(false));
+              console.log('user form error:', error);
+              setDialogText('global_error_title');
+            });
         }
       })
       .catch(error => {
+        dispatch(setLoading(false));
         console.log('user form error:', error);
+        setDialogText('global_error_title');
       });
   };
 
@@ -193,11 +242,12 @@ const UserFormScreen = ({navigation, route}: ScreenProps) => {
             options={{immutable: true}}
           />
           <View style={{height: 10}} />
-          <LocationInput
+          {/* <LocationInput
             location={location}
             setLocation={setLocation}
             placeholder={t('show_address')}
-          />
+          /> */}
+          <LocationInput location={address} placeholder={t('show_address')} />
         </ScrollView>
         <View style={styles.bottom_cont}>
           <Button

@@ -11,12 +11,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.sf_medium,
     color: colorPalet.black50,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   line: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 20,
   },
 });
 
